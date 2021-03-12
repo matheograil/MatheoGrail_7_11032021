@@ -9,7 +9,7 @@ Créez un réseau social d’entreprise.
 
 ## Configuration du _back-end_
 
-Pour le moment, aucune configuration n'est nécessaire.
+* Le _back-end_ nécessite l'installation de _Node.js_ et _NPM (avec nodemon)_.
 
 ## Démarrage du _back-end_
 

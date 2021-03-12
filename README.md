@@ -9,6 +9,15 @@ Créez un réseau social d’entreprise.
 
 ## Configuration du _back-end_
 
+* Plusieurs paramètres sont à modifier dans le fichier `.env` pour le bon fonctionnement de l'application _back-end_ :
+
+| Nom  | Description |
+| --- | --- |
+| **DB_HOST** | Adresse IP/nom de domaine de la base de données (MySQL) |
+| **DB_USER** | Utilisateur de la base de données (MySQL) |
+| **DB_DATABASE** | Nom de la base de données (MySQL) |
+| **DB_PASSWORD** | Mot de passe de la base de données (MySQL) |
+
 * Le _back-end_ nécessite l'installation de _Node.js_ et _NPM (avec nodemon)_.
 
 ## Démarrage du _back-end_

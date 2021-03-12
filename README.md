@@ -11,7 +11,7 @@ Créez un réseau social d’entreprise.
 
 ⚠️ La technologie utilisée pour la base de données est _MySQL_.
 
-* Plusieurs paramètres sont à modifier dans le fichier `.env` pour le bon fonctionnement de l'application _back-end_ :
+* Plusieurs paramètres sont à modifier dans le fichier `/back/.env` pour le bon fonctionnement de l'application _back-end_ :
 
 | Nom  | Description |
 | --- | --- |

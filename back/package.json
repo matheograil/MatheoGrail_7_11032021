@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/matheograil/MatheoGrail_7_11032021#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.5.0"
   }
 }

@@ -28,4 +28,4 @@ Dans le dossier de l'application `/back`, faire les commandes suivantes :
 * `nodemon start`
 
 Si tout s'est bien passé, un message dans la console devrait apparaître :
-> Listening on port 3000.
+> Connexion à la base de données réussie.

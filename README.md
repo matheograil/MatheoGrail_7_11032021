@@ -15,10 +15,10 @@ Créez un réseau social d’entreprise.
 
 | Nom  | Description |
 | --- | --- |
-| **DB_HOST** | Adresse IP/nom de domaine de la base de données (MySQL) |
-| **DB_USER** | Utilisateur de la base de données (MySQL) |
-| **DB_DATABASE** | Nom de la base de données (MySQL) |
-| **DB_PASSWORD** | Mot de passe de la base de données (MySQL) |
+| **DB_HOST** | Adresse IP/nom de domaine de la base de données |
+| **DB_USER** | Utilisateur de la base de données |
+| **DB_DATABASE** | Nom de la base de données |
+| **DB_PASSWORD** | Mot de passe de la base de données |
 
 * Le _back-end_ nécessite l'installation de _Node.js_ et _NPM (avec nodemon)_.
 

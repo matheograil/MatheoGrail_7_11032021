@@ -1,0 +1,6 @@
+#Fichiers ignorés pour macOS.
+*.DS_store
+#Modules Node ignorées.
+node_modules
+#Configuration ignorée.
+.env

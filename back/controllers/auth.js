@@ -1,67 +1,81 @@
+/*
+ * Importation des modèles.
+ */
 const { User } = require('../sequelize');
 
-// Modules nécessaires.
+
+/*
+ * Importation des modules.
+ */
 const bcrypt = require('bcrypt');
 const { Validator } = require('node-input-validator');
 const jsonwebtoken = require('jsonwebtoken');
 
-// GET : api/auth/signup.
-exports.register = (req, res) => {
+
+/*
+ * Déclaration des erreurs.
+ */
+const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
+const ERROR_SERVER = "Une erreur s'est produite.";                      /* Quand une erreur interne au serveur se produit */
+const SUCCESS = 'Succès.';                                              /* Quand tout se passe correctement */
+
+
+/*
+ * Déclaration des fonctions.
+ */
+// Permet de vérifier les identifiants envoyées.
+async function checkCredentials(req, res) {
     const UserValidator = new Validator(req.body, {
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    // Vérification des données reçues.
     UserValidator.check().then(matched => {
         if (!matched) {
-            return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+            return false;
         }
-        // Définition des variables.
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+}
+
+
+/*
+ * Les différentes fonctions de notre API.
+ */
+// Connexion.
+exports.register = (req, res) => {
+    checkCredentials(req, res).then((result) => {
+        if (result === false) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
+        }
         const { email, password } = req.body;
-        // L'utilisateur existe-t-il ?
         User.findOne({ where: { email: email } }).then((user) => {
             if (user !== null) {
-                return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+                return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
             }
-            // Chiffrement du mot de passe.
             bcrypt.hash(password, 10).then(hash => {
                 const newUser = User.build({
                     email: email,
                     password: hash
                 });
-                // Enregistrement dans la base de données.
                 newUser.save()
-                    .then(() => res.status(200).json({ message: "L'utilisateur a été enregistré." }))
-                    .catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-            }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-        }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-    }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
+                    .then(() => res.status(200).json({ message: SUCCESS }))
+                    .catch(() => res.status(500).json({ error: ERROR_SERVER }));
+            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
 
-// POST : api/auth/login.
+// Inscription.
 exports.login = (req, res) => {
-    const UserValidator = new Validator(req.body, {
-        email: 'required|email|maxLength:50',
-        password: 'required|string|lengthBetween:10,100'
-    });
-    // Vérification des données reçues.
-    UserValidator.check().then(matched => {
-        if (!matched) {
-            return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
-        }
-        // Définition des variables.
+    checkCredentials(req, res).then(() => {
         const { email, password } = req.body;
-        // L'utilisateur existe-t-il ?
         User.findOne({ where: { email: email } }).then((user) => {
             if (user === null) {
-                return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+                return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
             }
-            // Le mot de passe correspond-t-il ?
             bcrypt.compare(password, user.password).then(valid => {
                 if (!valid) {
-                    return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+                    return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
                 }
-                // Enregistrement du jeton d'accès.
                 res.status(200).json({
                     userId: user.id,
                     token: jsonwebtoken.sign(
@@ -70,7 +84,7 @@ exports.login = (req, res) => {
                         { expiresIn: '12h' }
                     )
                 });
-            }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-        }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-    }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
+            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

@@ -17,12 +17,12 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
     define: {
         timestamps: false
     }
-})
+});
 
-const User = UserModel(sequelize, Sequelize)
+const User = UserModel(sequelize, Sequelize);
 
 sequelize.sync({ force: true }).then(() => {
-    console.log('Connexion à la base de données réussie.')
+    console.log('Connexion à la base de données réussie.');
 });
 
 module.exports = {

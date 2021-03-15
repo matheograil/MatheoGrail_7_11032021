@@ -15,7 +15,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 // Les différentes routes.
-const registerRoutes = require('./routes/auth');
-app.use('/api/auth', registerRoutes);
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
 
 module.exports = app;

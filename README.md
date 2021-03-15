@@ -9,7 +9,7 @@ Créez un réseau social d’entreprise.
 
 ## Configuration du _back-end_
 
-⚠️ La technologie utilisée pour la base de données est _MySQL_.
+⚠️ La technologie utilisée pour la base de données est _MySQL_. La création des tables est gérée automatiquement par _Sequelize_. **Il est important de préciser que lors d'un redémarrage de l'application _back-end_, les anciennes tables sont réinitialisées. C'est donc un paramètre à prendre en compte dans un environnement de production.**
 
 * Plusieurs paramètres sont à modifier dans le fichier `/back/.env` pour le bon fonctionnement de l'application _back-end_ :
 

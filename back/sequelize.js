@@ -14,9 +14,15 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
     }
 });
 
-// Les différents modèles.
+/*
+ * Les différents modèles.
+ */
+// Table 'users'.
 const UserModel = require('./models/user');
 const User = UserModel(sequelize, Sequelize);
+// Table 'messages'.
+const MessageModel = require('./models/message');
+const Message = MessageModel(sequelize, Sequelize);
 
 // Synchronisation de la base de données avec les modèles.
 sequelize.sync({ force: true }).then(() => {
@@ -25,5 +31,6 @@ sequelize.sync({ force: true }).then(() => {
 
 // Exportation des modèles.
 module.exports = {
-    User
+    User,
+    Message
 };

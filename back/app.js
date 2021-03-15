@@ -25,8 +25,14 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-// Les différentes routes de notre application.
+/*
+ * Les différentes routes de notre application.
+ */
+// Authentification.
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+// Publication.
+const publicationRoutes = require('./routes/publication');
+app.use('/api/publication', publicationRoutes);
 
 module.exports = app;

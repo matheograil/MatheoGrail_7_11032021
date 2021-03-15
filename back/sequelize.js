@@ -1,10 +1,5 @@
-const Sequelize = require('sequelize');
-const UserModel = require('./models/user');
-
-// Importation de la configuration.
-require('dotenv').config();
-
 // Connexion à la base de données.
+const Sequelize = require('sequelize');
 const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
     dialect: 'mysql',
@@ -19,12 +14,16 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
     }
 });
 
+// Les différents modèles.
+const UserModel = require('./models/user');
 const User = UserModel(sequelize, Sequelize);
 
+// Synchronisation de la base de données avec les modèles.
 sequelize.sync({ force: true }).then(() => {
     console.log('Connexion à la base de données réussie.');
 });
 
+// Exportation des modèles.
 module.exports = {
     User
 };

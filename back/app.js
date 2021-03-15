@@ -18,6 +18,9 @@ app.use((req, res, next) => {
     next();
 });
 
+// Importation de la configuration.
+require('dotenv').config();
+
 // Permet de manipuler les données reçues.
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());

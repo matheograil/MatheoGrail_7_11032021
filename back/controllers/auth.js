@@ -17,8 +17,7 @@ exports.register = (req, res) => {
             return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
         }
         // Définition des variables.
-        const email = req.body.email;
-        const password = req.body.password;
+        const { email, password } = req.body;
         // L'utilisateur existe-t-il ?
         User.findOne({ where: { email: email } }).then((user) => {
             if (user !== null) {
@@ -51,8 +50,7 @@ exports.login = (req, res) => {
             return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
         }
         // Définition des variables.
-        const email = req.body.email;
-        const password = req.body.password;
+        const { email, password } = req.body;
         // L'utilisateur existe-t-il ?
         User.findOne({ where: { email: email } }).then((user) => {
             if (user === null) {
@@ -75,4 +73,4 @@ exports.login = (req, res) => {
             }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
         }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
     }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-}
+};

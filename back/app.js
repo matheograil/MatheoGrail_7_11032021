@@ -2,6 +2,14 @@
 const express = require('express');
 const app = express();
 
+// Protection contre les attaques par force brute.
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 60
+});
+app.use(limiter);
+
 // Cross Origin Resource Sharing.
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

@@ -1,3 +1,4 @@
+// Modèle de la table des utilisateurs.
 module.exports = (sequelize, type) => {
     return sequelize.define('users', {
         id: {

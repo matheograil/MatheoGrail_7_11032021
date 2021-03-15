@@ -1,8 +1,16 @@
-// Framework Express.
+// Utilisation du framework Express.
 const express = require('express');
 const app = express();
 
-// Cross Origin Resource Sharing.
+// Protection contre les attaques par force brute (1 requête/seconde).
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 60
+});
+app.use(limiter);
+
+// Permet d'éviter les erreurs lors du développement.
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -10,11 +18,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// Permet de manipuler les données reçues via POST.
+// Permet de manipuler les données reçues.
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-// Les différentes routes.
+// Les différentes routes de notre application.
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 

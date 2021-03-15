@@ -1,78 +1,103 @@
+/*
+ * Importation des modèles.
+ */
 const { User } = require('../sequelize');
 
-// Modules nécessaires.
+
+/*
+ * Importation des modules.
+ */
 const bcrypt = require('bcrypt');
 const { Validator } = require('node-input-validator');
 const jsonwebtoken = require('jsonwebtoken');
 
-// GET : api/auth/signup.
-exports.register = (req, res) => {
+
+/*
+ * Déclaration des erreurs.
+ */
+const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
+const ERROR_SERVER = "Une erreur s'est produite.";                      /* Quand une erreur interne au serveur se produit */
+const SUCCESS = 'Succès.';                                              /* Quand tout se passe correctement */
+
+
+/*
+ * Déclaration des fonctions.
+ */
+// Permet de vérifier les identifiants envoyées.
+async function areCredentialsValid(req, res) {
     const UserValidator = new Validator(req.body, {
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    // Vérification des données reçues.
-    UserValidator.check().then(matched => {
+    return UserValidator.check().then(matched => {
         if (!matched) {
-            return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+            return false;
         }
-        // Définition des variables.
-        const email = req.body.email;
-        const password = req.body.password;
-        // L'utilisateur existe-t-il ?
-        User.findOne({ where: { email: email } }).then((user) => {
-            if (user !== null) {
-                return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+}
+
+// Permet de savoir si une adresse électronique est dans la base de données.
+async function doesUserExist(res, email) {
+    return User.findOne({ where: { email: email } }).then((user) => {
+        if (user === null) {
+            return false;
+        }
+        return user;   /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+}
+
+
+/*
+ * Les différentes fonctions de notre API.
+ */
+// Inscription.
+exports.register = (req, res) => {
+    areCredentialsValid(req, res).then(areCredentialsValid => {
+        if (areCredentialsValid === false) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA });
+        }
+        const { email, password } = req.body;
+        doesUserExist(res, email).then(doesUserExist => {
+            if (doesUserExist !== false) {
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
-            // Chiffrement du mot de passe.
             bcrypt.hash(password, 10).then(hash => {
                 const newUser = User.build({
                     email: email,
                     password: hash
                 });
-                // Enregistrement dans la base de données.
                 newUser.save()
-                    .then(() => res.status(200).json({ message: "L'utilisateur a été enregistré." }))
-                    .catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-            }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-        }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-    }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
+                    .then(() => res.status(200).json({ message: SUCCESS }))
+                    .catch(() => res.status(500).json({ error: ERROR_SERVER }));
+            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
 
-// POST : api/auth/login.
+// Connexion.
 exports.login = (req, res) => {
-    const UserValidator = new Validator(req.body, {
-        email: 'required|email|maxLength:50',
-        password: 'required|string|lengthBetween:10,100'
-    });
-    // Vérification des données reçues.
-    UserValidator.check().then(matched => {
-        if (!matched) {
-            return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+    areCredentialsValid(req, res).then(areCredentialsValid => {
+        if (areCredentialsValid === false) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
-        // Définition des variables.
-        const email = req.body.email;
-        const password = req.body.password;
-        // L'utilisateur existe-t-il ?
-        User.findOne({ where: { email: email } }).then((user) => {
-            if (user === null) {
-                return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+        const { email, password } = req.body;
+        doesUserExist(res, email).then(doesUserExist => {
+            if (doesUserExist === false) {
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
-            // Le mot de passe correspond-t-il ?
-            bcrypt.compare(password, user.password).then(valid => {
+            bcrypt.compare(password, doesUserExist.password).then(valid => {
                 if (!valid) {
-                    return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+                    return res.status(400).json({ error: ERROR_WRONG_DATA });
                 }
-                // Enregistrement du jeton d'accès.
                 res.status(200).json({
-                    userId: user.id,
+                    userId: doesUserExist.id,
                     token: jsonwebtoken.sign(
-                        { userId: user.id },
+                        { userId: doesUserExist.id },
                         process.env.JWT_TOKEN,
                         { expiresIn: '12h' }
                     )
                 });
-            }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-        }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-    }).catch(() => res.status(500).json({ error: "Une erreur s'est produite." }));
-}
+            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+};

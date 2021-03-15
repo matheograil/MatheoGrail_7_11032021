@@ -42,7 +42,7 @@ async function doesUserExist(res, email) {
         if (user === null) {
             return false;
         }
-        return user.password;   /* Permet de vérifier la correspondance du mot de passe */
+        return user;   /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 }
 
@@ -59,7 +59,7 @@ exports.register = (req, res) => {
         const { email, password } = req.body;
         doesUserExist(res, email).then(doesUserExist => {
             if (doesUserExist !== false) {
-                return res.status(400).json({ error: 'ERROR_WRONG_DATA' });
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
             bcrypt.hash(password, 10).then(hash => {
                 const newUser = User.build({
@@ -85,7 +85,7 @@ exports.login = (req, res) => {
             if (doesUserExist === false) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
-            bcrypt.compare(password, user.password).then(valid => {
+            bcrypt.compare(password, doesUserExist.password).then(valid => {
                 if (!valid) {
                     return res.status(400).json({ error: ERROR_WRONG_DATA });
                 }

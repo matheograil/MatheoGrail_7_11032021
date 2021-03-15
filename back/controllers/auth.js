@@ -24,15 +24,25 @@ const SUCCESS = 'Succès.';                                              /* Quan
  * Déclaration des fonctions.
  */
 // Permet de vérifier les identifiants envoyées.
-async function checkCredentials(req, res) {
+async function areCredentialsValid(req, res) {
     const UserValidator = new Validator(req.body, {
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    UserValidator.check().then(matched => {
+    return UserValidator.check().then(matched => {
         if (!matched) {
             return false;
         }
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+}
+
+// Permet de savoir si une adresse électronique est dans la base de données.
+async function doesUserExist(res, email) {
+    return User.findOne({ where: { email: email } }).then((user) => {
+        if (user === null) {
+            return false;
+        }
+        return user.password;   /* Permet de vérifier la correspondance du mot de passe */
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 }
 
@@ -40,16 +50,16 @@ async function checkCredentials(req, res) {
 /*
  * Les différentes fonctions de notre API.
  */
-// Connexion.
+// Inscription.
 exports.register = (req, res) => {
-    checkCredentials(req, res).then((result) => {
-        if (result === false) {
-            return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
+    areCredentialsValid(req, res).then(areCredentialsValid => {
+        if (areCredentialsValid === false) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;
-        User.findOne({ where: { email: email } }).then((user) => {
-            if (user !== null) {
-                return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
+        doesUserExist(res, email).then(doesUserExist => {
+            if (doesUserExist !== false) {
+                return res.status(400).json({ error: 'ERROR_WRONG_DATA' });
             }
             bcrypt.hash(password, 10).then(hash => {
                 const newUser = User.build({
@@ -64,22 +74,25 @@ exports.register = (req, res) => {
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
 
-// Inscription.
+// Connexion.
 exports.login = (req, res) => {
-    checkCredentials(req, res).then(() => {
+    areCredentialsValid(req, res).then(areCredentialsValid => {
+        if (areCredentialsValid === false) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA });
+        }
         const { email, password } = req.body;
-        User.findOne({ where: { email: email } }).then((user) => {
-            if (user === null) {
-                return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
+        doesUserExist(res, email).then(doesUserExist => {
+            if (doesUserExist === false) {
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
             bcrypt.compare(password, user.password).then(valid => {
                 if (!valid) {
-                    return res.status(400).json({ error: ERROR_WRONG_DATA_INPUT });
+                    return res.status(400).json({ error: ERROR_WRONG_DATA });
                 }
                 res.status(200).json({
-                    userId: user.id,
+                    userId: doesUserExist.id,
                     token: jsonwebtoken.sign(
-                        { userId: user.id },
+                        { userId: doesUserExist.id },
                         process.env.JWT_TOKEN,
                         { expiresIn: '12h' }
                     )

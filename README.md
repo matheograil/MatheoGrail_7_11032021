@@ -21,7 +21,7 @@ Créez un réseau social d’entreprise.
 | **DB_DATABASE** | Nom de la base de données |
 | **DB_PASSWORD** | Mot de passe de la base de données |
 
-* Le _back-end_ nécessite l'installation de _Node.js_ et _NPM (avec nodemon)_.
+* Le _back-end_ nécessite également l'installation de _Node.js_ et _NPM (avec nodemon)_.
 
 ## Démarrage du _back-end_
 

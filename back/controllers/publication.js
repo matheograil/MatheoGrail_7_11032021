@@ -34,14 +34,29 @@ async function isContentValid(req, res) {
 };
 
 // Permet de savoir si l'utilisateur peut envoyer son contenu (protection anti-spam).
-// async function canUserSent(res, email) {
-    // return Message.findOne({ where: { email: email } }).then((content) => {
-    //     if (content === null) {
-     //        return true;
-     //    }
-     //    return user;
-   //  }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-// };
+async function canUserSent(res, userId) {
+    return Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((content) => {
+        if (content === null) {
+            return true;
+        }
+        const currentTimestamp = Math.floor(Date.now()/1000);
+        if (content.timestamp <= currentTimestamp - 60) {       /* On autorise une publication par minute */
+            return true;
+        }
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+};
+
+// Permet de sauvegarder un contenu dans la base de données.
+async function saveNewContent(res, content, userId) {
+    const newMessage = Message.build({
+        content: content,
+        userId: userId,
+        timestamp: Math.floor(Date.now()/1000)
+    });
+    return newMessage.save().then(() => {
+        return true;
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+};
 
 
 /*
@@ -53,5 +68,18 @@ exports.message = (req, res) => {
         if (isContentValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
+        const content = req.body.content;
+        const userId = req.body.userId;     /* Variable déjà vérifiée par le Middleware auth.js */
+        canUserSent(res, userId).then(canUserSent => {
+            if (canUserSent !== true) {
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
+            }
+            saveNewContent(res, content, userId).then((saveNewContent) => {
+                if (saveNewContent !== true) {
+                    return res.status(500).json({ error: 'ERROR_SERVER' });
+                }
+                res.status(200).json({ message: SUCCESS });
+            }).catch(() => res.status(500).json({ error: 'ERROR_SERVER' }));
+        }).catch(() => res.status(500).json({ error: 'ERROR_SERVER' }));
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

@@ -18,12 +18,21 @@ app.use((req, res, next) => {
     next();
 });
 
+// Importation de la configuration.
+require('dotenv').config();
+
 // Permet de manipuler les données reçues.
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-// Les différentes routes de notre application.
+/*
+ * Les différentes routes de notre application.
+ */
+// Authentification.
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+// Publication.
+const publicationRoutes = require('./routes/publication');
+app.use('/api/publication', publicationRoutes);
 
 module.exports = app;

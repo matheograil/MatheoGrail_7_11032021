@@ -34,7 +34,7 @@ async function areCredentialsValid(req, res) {
             return false;
         }
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-}
+};
 
 // Permet de savoir si une adresse électronique est dans la base de données.
 async function doesUserExist(res, email) {
@@ -44,7 +44,7 @@ async function doesUserExist(res, email) {
         }
         return user;   /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-}
+};
 
 
 /*
@@ -90,11 +90,15 @@ exports.login = (req, res) => {
                     return res.status(400).json({ error: ERROR_WRONG_DATA });
                 }
                 res.status(200).json({
-                    userId: doesUserExist.id,
+                    userId : doesUserExist.id,
                     token: jsonwebtoken.sign(
-                        { userId: doesUserExist.id },
+                        {
+                            userId: doesUserExist.id
+                        },
                         process.env.JWT_TOKEN,
-                        { expiresIn: '12h' }
+                        {
+                            expiresIn: '12h'
+                        }
                     )
                 });
             }).catch(() => res.status(500).json({ error: ERROR_SERVER }));

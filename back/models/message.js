@@ -6,8 +6,8 @@ module.exports = (sequelize, type) => {
             primaryKey: true,
             autoIncrement: true
         },
-        message: type.STRING(3000),
-        user: type.STRING(50),
+        content: type.STRING(3000),
+        userId: type.INTEGER(11),
         timestamp: type.STRING(20)
     });
 };

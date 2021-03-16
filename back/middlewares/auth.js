@@ -1,16 +1,47 @@
-// Middleware permettant de protéger certaines fonctions de l'API aux utilisateurs connectés.
+/*
+ * Importation des modèles.
+ */
+const { User } = require('../sequelize');
 
+
+/*
+ * Importation des modules.
+ */
+const { Validator } = require('node-input-validator');
 const jsonwebtoken = require('jsonwebtoken');
+
+
+/*
+ * Déclaration des erreurs.
+ */
+const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
+const ERROR_SERVER = "Une erreur s'est produite.";                      /* Quand un utilisateur n'est pas connecté */
+const ERROR_SERVER = "Une erreur s'est produite.";                      /* Quand une erreur interne au serveur se produit */
+
+
+/*
+ * Middleware permettant de protéger certaines fonctions de l'API, aux utilisateurs connectés.
+ * Par conséquent, on vérifie le jeton mais aussi l'existence de l'utilisateur. 
+ * Car un compte peut avoir été supprimé alors que son jeton sera toujours valide.
+ */
 module.exports = (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1];
+    const AuthValidator = new Validator( { token: req.headers.authorization, userId: req.body.userId }, {
+        token: 'required|string|maxLength:286',
+        userId: 'required|integer|lengthBetween:11'
+    });
+    AuthValidator.check().then(matched => {
+
+        const token = req.headers.authorization;
         const decodedToken = jsonwebtoken.verify(token, process.env.JWT_TOKEN);
-        const userId = decodedToken.userId;
-        if (req.body.userId && req.body.userId !== userId) {
+        if (req.body.userId !== decodedToken.userId) {                       /* Vérification du jeton */
             return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
         }
-        next();
-    } catch {
-        res.status(401).json({ error: "L'utilisateur doit être connecté." });
-    }
+        User.findOne({ where: { id: decodedToken.userId } }).then((user) => {
+            if (user === null) {
+                return res.status(400).json({ error: 'Les identifiants sont incorrects.' });
+            }
+            next();
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

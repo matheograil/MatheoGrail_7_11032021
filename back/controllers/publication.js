@@ -76,10 +76,10 @@ exports.message = (req, res) => {
             }
             saveNewContent(res, content, userId).then((saveNewContent) => {
                 if (saveNewContent !== true) {
-                    return res.status(500).json({ error: 'ERROR_SERVER' });
+                    return res.status(500).json({ error: ERROR_SERVER });
                 }
                 res.status(200).json({ message: SUCCESS });
-            }).catch(() => res.status(500).json({ error: 'ERROR_SERVER' }));
-        }).catch(() => res.status(500).json({ error: 'ERROR_SERVER' }));
+            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

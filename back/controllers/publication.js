@@ -53,6 +53,5 @@ exports.message = (req, res) => {
         if (isContentValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
-        console.log('yo man');
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

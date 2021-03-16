@@ -63,7 +63,7 @@ async function saveNewContent(res, content, userId) {
  * Les différentes fonctions de notre API.
  */
 // Publication d'un message.
-exports.message = (req, res) => {
+exports.newMessage = (req, res) => {
     isContentValid(req, res).then(isContentValid => {
         if (isContentValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
@@ -76,10 +76,17 @@ exports.message = (req, res) => {
             }
             saveNewContent(res, content, userId).then((saveNewContent) => {
                 if (saveNewContent !== true) {
-                    return res.status(500).json({ error: 'ERROR_SERVER' });
+                    return res.status(500).json({ error: ERROR_SERVER });
                 }
                 res.status(200).json({ message: SUCCESS });
-            }).catch(() => res.status(500).json({ error: 'ERROR_SERVER' }));
-        }).catch(() => res.status(500).json({ error: 'ERROR_SERVER' }));
+            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+};
+
+// Affichage des messages.
+exports.getAllMessages = (req, res) => {
+    Message.findAll({ order: [[ 'id', 'DESC' ]] }).then((messages) => {
+        res.status(200).json(messages);
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

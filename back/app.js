@@ -31,8 +31,8 @@ app.use(bodyParser.json());
 // Authentification.
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
-// Publication.
-const publicationRoutes = require('./routes/publication');
-app.use('/api/publication', publicationRoutes);
+// Messages.
+const messagesRoutes = require('./routes/messages');
+app.use('/api/messages', messagesRoutes);
 
 module.exports = app;

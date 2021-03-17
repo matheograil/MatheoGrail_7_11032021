@@ -21,7 +21,7 @@ const SUCCESS = 'Succès.';                                              /* Quan
 /*
  * Déclaration des fonctions.
  */
-// Permet de vérifier les identifiants envoyées.
+// Permet de vérifier les variables envoyées.
 async function isContentValid(req, res) {
     const ContentValidator = new Validator(req.body, {
         content: 'required|string|maxLength:3000'
@@ -33,7 +33,7 @@ async function isContentValid(req, res) {
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
 
-// Permet de savoir si l'utilisateur peut envoyer son contenu (protection anti-spam).
+// Permet de savoir si l'utilisateur peut envoyer son message (protection anti-spam).
 async function canUserSent(res, userId) {
     return Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((content) => {
         if (content === null) {
@@ -43,18 +43,6 @@ async function canUserSent(res, userId) {
         if (content.timestamp <= currentTimestamp - 60) {       /* On autorise une publication par minute */
             return true;
         }
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-};
-
-// Permet de sauvegarder un contenu dans la base de données.
-async function saveNewContent(res, content, userId) {
-    const newMessage = Message.build({
-        content: content,
-        userId: userId,
-        timestamp: Math.floor(Date.now()/1000)
-    });
-    return newMessage.save().then(() => {
-        return true;
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
 
@@ -74,10 +62,12 @@ exports.newMessage = (req, res) => {
             if (canUserSent !== true) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
-            saveNewContent(res, content, userId).then((saveNewContent) => {
-                if (saveNewContent !== true) {
-                    return res.status(500).json({ error: ERROR_SERVER });
-                }
+            const newMessage = Message.build({
+                content: content,
+                userId: userId,
+                timestamp: Math.floor(Date.now()/1000)
+            });
+            newMessage.save().then(() => {
                 res.status(200).json({ message: SUCCESS });
             }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
         }).catch(() => res.status(500).json({ error: ERROR_SERVER }));

@@ -44,5 +44,5 @@ module.exports = (req, res, next) => {
             }
             next();
         }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_WRONG_DATA }));
 };

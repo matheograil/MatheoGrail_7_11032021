@@ -16,8 +16,8 @@ const jsonwebtoken = require('jsonwebtoken');
  * Déclaration des erreurs.
  */
 const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
-const ERROR_SERVER = "Une erreur s'est produite.";                      /* Quand une erreur interne au serveur se produit */
-const SUCCESS = 'Succès.';                                              /* Quand tout se passe correctement */
+const ERROR_SERVER = 'Une erreur est survenue.';                        /* Quand une erreur interne au serveur se produit */
+const SUCCESS = 'Opération achevée avec succès.';                       /* Quand tout se passe correctement */
 
 
 /*

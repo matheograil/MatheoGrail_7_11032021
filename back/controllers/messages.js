@@ -14,8 +14,8 @@ const { Validator } = require('node-input-validator');
  * Déclaration des erreurs.
  */
 const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
-const ERROR_SERVER = "Une erreur s'est produite.";                      /* Quand une erreur interne au serveur se produit */
-const SUCCESS = 'Succès.';                                              /* Quand tout se passe correctement */
+const ERROR_SERVER = 'Une erreur est survenue.';                        /* Quand une erreur interne au serveur se produit */
+const SUCCESS = 'Opération achevée avec succès.';                       /* Quand tout se passe correctement */
 
 
 /*
@@ -30,8 +30,7 @@ exports.newMessage = (req, res) => {
         if (!matched) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
-        const content = req.body.content;
-        const userId = req.body.userId;     /* Variable déjà vérifiée par le Middleware auth.js */
+        const { content, userId } = req.body;   /* Variable 'userId' déjà vérifiée par le Middleware auth.js */
         Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
             if (message !== null) {
                 const currentTimestamp = Math.floor(Date.now()/1000);

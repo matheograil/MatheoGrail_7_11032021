@@ -23,18 +23,8 @@ const SUCCESS = 'Opération achevée avec succès.';                       /* Qu
 /*
  * Déclaration des fonctions.
  */
-// Permet de vérifier les identifiants envoyées.
-async function areCredentialsValid(req, res) {
-    const UserValidator = new Validator(req.body, {
-        email: 'required|email|maxLength:50',
-        password: 'required|string|lengthBetween:10,100'
-    });
-    return UserValidator.check().then(matched => {
-        if (!matched) {
-            return false;
-        }
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-};
+// Importation des functions globales.
+const globalFunctions = require('../globalFunctions');
 
 // Permet de savoir si une adresse électronique est dans la base de données.
 async function doesUserExist(res, email) {
@@ -48,12 +38,24 @@ async function doesUserExist(res, email) {
 
 
 /*
+ * Déclaration des règles pour vérifier les variables.
+ */
+function UserValidator(req) {
+    const UserValidator = new Validator(req.body, {
+        email: 'required|email|maxLength:50',
+        password: 'required|string|lengthBetween:10,100'
+    });
+    return UserValidator;
+}
+
+
+/*
  * Les différentes fonctions de notre API.
  */
 // Inscription.
 exports.register = (req, res) => {
-    areCredentialsValid(req, res).then(areCredentialsValid => {
-        if (areCredentialsValid === false) {
+    globalFunctions.areVariablesValid(res, UserValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;
@@ -76,8 +78,8 @@ exports.register = (req, res) => {
 
 // Connexion.
 exports.login = (req, res) => {
-    areCredentialsValid(req, res).then(areCredentialsValid => {
-        if (areCredentialsValid === false) {
+    globalFunctions.areVariablesValid(res, UserValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;

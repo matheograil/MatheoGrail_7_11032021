@@ -19,15 +19,37 @@ const SUCCESS = 'Opération achevée avec succès.';                       /* Qu
 
 
 /*
+ * Déclaration des fonctions.
+ */
+// Importation des functions globales.
+const globalFunctions = require('../globalFunctions');
+
+
+/*
+ * Déclaration des règles pour vérifier les variables.
+ */
+function MessageContentValidator(req) {
+    const MessageContentValidator = new Validator(req.body, {
+        content: 'required|string|maxLength:3000'
+    });
+    return MessageContentValidator;
+}
+
+function MessageIdValidator(req) {
+    const MessageIdValidator = new Validator(req.params, {
+        id: 'required|integer|maxLength:11'
+    });
+    return MessageIdValidator;
+}
+
+
+/*
  * Les différentes fonctions de notre API.
  */
 // Publication d'un message.
 exports.newMessage = (req, res) => {
-    const MessageValidator = new Validator(req.body, {
-        content: 'required|string|maxLength:3000'
-    });
-    MessageValidator.check().then(matched => {
-        if (!matched) {
+    globalFunctions.areVariablesValid(res, MessageContentValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { content, userId } = req.body;   /* Variable 'userId' déjà vérifiée par le Middleware auth.js */
@@ -59,11 +81,8 @@ exports.getAllMessages = (req, res) => {
 
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
-    const MessageValidator = new Validator(req.params, {
-        id: 'required|integer|maxLength:11'
-    });
-    MessageValidator.check().then(matched => {
-        if (!matched) {
+    globalFunctions.areVariablesValid(res, MessageIdValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const id = req.params.id;

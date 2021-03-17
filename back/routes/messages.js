@@ -10,5 +10,7 @@ const messagesCtrl = require('../controllers/messages');
 router.post('/', auth, messagesCtrl.newMessage);    /* POST : api/publication/message */
 // Affichage des messages.
 router.get('/', auth, messagesCtrl.getAllMessages);    /* GET : api/publication/messages */
+// Suppression d'un message.
+router.delete('/:id', auth, messagesCtrl.delMessage);    /* DELETE : api/publication/messages/:id */
 
 module.exports = router;

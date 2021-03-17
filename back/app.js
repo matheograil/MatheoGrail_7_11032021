@@ -34,5 +34,8 @@ app.use('/api/auth', authRoutes);
 // Messages.
 const messagesRoutes = require('./routes/messages');
 app.use('/api/messages', messagesRoutes);
+// Commentaires.
+const commentsRoutes = require('./routes/comments');
+app.use('/api/comments', commentsRoutes);
 
 module.exports = app;

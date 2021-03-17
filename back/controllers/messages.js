@@ -29,11 +29,11 @@ const globalFunctions = require('../globalFunctions');
 /*
  * Déclaration des règles pour vérifier les variables.
  */
-function MessageIdValidator(req) {
-    const MessageIdValidator = new Validator(req.params, {
+function IdValidator(req) {
+    const IdValidator = new Validator(req.params, {
         id: 'required|integer|maxLength:11'
     });
-    return MessageIdValidator;
+    return IdValidator;
 }
 
 
@@ -42,10 +42,10 @@ function MessageIdValidator(req) {
  */
 // Publication d'un message.
 exports.newMessage = (req, res) => {
-    const MessageContentValidator = new Validator(req.body, {
+    const newMessageValidator = new Validator(req.body, {
         content: 'required|string|maxLength:3000'
     });
-    globalFunctions.areVariablesValid(res, MessageContentValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(res, newMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
@@ -77,7 +77,7 @@ exports.getAllMessages = (req, res) => {
 
 // Affichage d'un message.
 exports.getMessage = (req, res) => {
-    globalFunctions.areVariablesValid(res, MessageIdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(res, IdValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
@@ -93,11 +93,11 @@ exports.getMessage = (req, res) => {
 
 // Modification d'un message.
 exports.editMessage = (req, res) => {
-    const MessageIdContentValidator = new Validator({ id: req.params.id, content: req.body.content }, {
+    const editMessageValidator = new Validator({ id: req.params.id, content: req.body.content }, {
         id: 'required|integer|maxLength:11',
         content: 'required|string|maxLength:3000'
     });
-    globalFunctions.areVariablesValid(res, MessageIdContentValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(res, editMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
@@ -114,7 +114,7 @@ exports.editMessage = (req, res) => {
 
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
-    globalFunctions.areVariablesValid(res, MessageIdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(res, IdValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }

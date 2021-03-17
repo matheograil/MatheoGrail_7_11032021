@@ -23,10 +23,10 @@ const SUCCESS = 'Succès.';                                              /* Quan
  */
 // Publication d'un message.
 exports.newMessage = (req, res) => {
-    const ContentValidator = new Validator(req.body, {
+    const MessageValidator = new Validator(req.body, {
         content: 'required|string|maxLength:3000'
     });
-    ContentValidator.check().then(matched => {
+    MessageValidator.check().then(matched => {
         if (!matched) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
@@ -55,5 +55,25 @@ exports.newMessage = (req, res) => {
 exports.getAllMessages = (req, res) => {
     Message.findAll({ order: [[ 'id', 'DESC' ]] }).then((messages) => {
         res.status(200).json(messages);
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+};
+
+// Suppression d'un message.
+exports.delMessage = (req, res) => {
+    const MessageValidator = new Validator(req.params, {
+        id: 'required|integer|maxLength:11'
+    });
+    MessageValidator.check().then(matched => {
+        if (!matched) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA });
+        }
+        const id = req.params.id;
+        const userId = req.body.userId;
+        Message.destroy({ where: { id: id, userId: userId } }).then((message) => {
+            if (message === 0) {
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
+            }
+            res.status(200).json({ message: SUCCESS });
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

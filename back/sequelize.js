@@ -27,6 +27,8 @@ const Message = MessageModel(sequelize, Sequelize);
 // Synchronisation de la base de données avec les modèles.
 sequelize.sync({ force: true }).then(() => {
     console.log('Connexion à la base de données réussie.');
+}).catch(() => {
+    console.log("Connexion à la base de données échouée.");
 });
 
 // Exportation des modèles.

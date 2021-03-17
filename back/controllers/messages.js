@@ -79,6 +79,22 @@ exports.getAllMessages = (req, res) => {
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
 
+// Affichage d'un message.
+exports.getMessage = (req, res) => {
+    globalFunctions.areVariablesValid(res, MessageIdValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
+            return res.status(400).json({ error: ERROR_WRONG_DATA });
+        }
+        const id = req.params.id;
+        Message.findOne({ where: { id: id } }).then((message) => {
+            if (message === null) {
+                return res.status(400).json({ error: ERROR_WRONG_DATA });
+            }
+            res.status(200).json(message);
+        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+};
+
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
     globalFunctions.areVariablesValid(res, MessageIdValidator(req)).then(areVariablesValid => {

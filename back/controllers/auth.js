@@ -13,7 +13,7 @@ const jsonwebtoken = require('jsonwebtoken');
 
 
 /*
- * Déclaration des erreurs.
+ * Déclaration des constantes.
  */
 const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
 const ERROR_SERVER = 'Une erreur est survenue.';                        /* Quand une erreur interne au serveur se produit */

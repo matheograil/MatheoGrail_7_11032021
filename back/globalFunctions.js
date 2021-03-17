@@ -7,6 +7,6 @@ async function areVariablesValid(res, rules) {
         if (!matched) {
             return false;
         }
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    });
 };
 module.exports.areVariablesValid = areVariablesValid;

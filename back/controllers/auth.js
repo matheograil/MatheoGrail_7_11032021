@@ -33,7 +33,7 @@ async function doesUserExist(res, email) {
             return false;
         }
         return user;   /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+    });
 };
 
 

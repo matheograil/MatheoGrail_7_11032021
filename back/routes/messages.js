@@ -7,7 +7,7 @@ const auth = require('../middlewares/auth');
 const messagesCtrl = require('../controllers/messages');
 
 // Publication d'un message.
-router.post('/', auth, messagesCtrl.newMessage);    /* POST : api/publication/message */
+router.post('/', auth, messagesCtrl.newMessage);    /* POST : api/publication/messages */
 // Affichage des messages.
 router.get('/', auth, messagesCtrl.getAllMessages);    /* GET : api/publication/messages */
 // Affichage d'un message.

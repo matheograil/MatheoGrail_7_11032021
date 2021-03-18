@@ -23,6 +23,9 @@ const User = UserModel(sequelize, Sequelize);
 // Table 'messages'.
 const MessageModel = require('./models/message');
 const Message = MessageModel(sequelize, Sequelize);
+// Table 'comments'.
+const CommentModel = require('./models/comment');
+const Comment = CommentModel(sequelize, Sequelize);
 
 // Synchronisation de la base de données avec les modèles.
 sequelize.sync({ force: true }).then(() => {
@@ -34,5 +37,6 @@ sequelize.sync({ force: true }).then(() => {
 // Exportation des modèles.
 module.exports = {
     User,
-    Message
+    Message,
+    Comment
 };

@@ -24,10 +24,10 @@ const SUCCESS = 'Opération achevée avec succès.';                       /* Qu
  * Déclaration des fonctions.
  */
 // Importation des functions globales.
-const globalFunctions = require('../globalFunctions');
+const globalFunctions = require('../global/functions');
 
 // Permet de savoir si une adresse électronique est dans la base de données.
-async function doesUserExist(res, email) {
+async function doesUserExist(email) {
     return User.findOne({ where: { email: email } }).then((user) => {
         if (user === null) {
             return false;
@@ -38,33 +38,29 @@ async function doesUserExist(res, email) {
 
 
 /*
- * Déclaration des règles pour vérifier les variables.
- */
-function UserValidator(req) {
-    const UserValidator = new Validator(req.body, {
-        email: 'required|email|maxLength:50',
-        password: 'required|string|lengthBetween:10,100'
-    });
-    return UserValidator;
-}
-
-
-/*
  * Les différentes fonctions de notre API.
  */
 // Inscription.
 exports.register = (req, res) => {
-    globalFunctions.areVariablesValid(res, UserValidator(req)).then(areVariablesValid => {
+    const RegisterValidator = new Validator(req.body, {
+        firstName: 'required|string|maxLength:50',
+        name: 'required|string|maxLength:50',
+        email: 'required|email|maxLength:50',
+        password: 'required|string|lengthBetween:10,100'
+    });
+    globalFunctions.areVariablesValid(res, RegisterValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
-        const { email, password } = req.body;
-        doesUserExist(res, email).then(doesUserExist => {
+        const { email, password, firstName, name } = req.body;
+        doesUserExist(email).then(doesUserExist => {
             if (doesUserExist !== false) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
             bcrypt.hash(password, 10).then(hash => {
                 const newUser = User.build({
+                    firstName: firstName,
+                    name: name,
                     email: email,
                     password: hash
                 });
@@ -78,12 +74,16 @@ exports.register = (req, res) => {
 
 // Connexion.
 exports.login = (req, res) => {
-    globalFunctions.areVariablesValid(res, UserValidator(req)).then(areVariablesValid => {
+    const LoginValidator = new Validator(req.body, {
+        email: 'required|email|maxLength:50',
+        password: 'required|string|lengthBetween:10,100'
+    });
+    globalFunctions.areVariablesValid(res, LoginValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;
-        doesUserExist(res, email).then(doesUserExist => {
+        doesUserExist(email).then(doesUserExist => {
             if (doesUserExist === false) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }

@@ -24,7 +24,7 @@ const SUCCESS = 'Opération achevée avec succès.';                       /* Qu
  * Déclaration des fonctions.
  */
 // Importation des functions globales.
-const globalFunctions = require('../globalFunctions');
+const globalFunctions = require('../global/functions');
 
 // Permet de savoir si une adresse électronique est dans la base de données.
 async function doesUserExist(res, email) {

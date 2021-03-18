@@ -23,7 +23,7 @@ const CURRENT_TIMESTAMP = Math.floor(Date.now()/1000);
  * Déclaration des fonctions.
  */
 // Importation des functions globales.
-const globalFunctions = require('../globalFunctions');
+const globalFunctions = require('../global/functions');
 
 
 /*
@@ -52,7 +52,7 @@ exports.newMessage = (req, res) => {
         const { content, userId } = req.body;   /* Variable 'userId' déjà vérifiée par le Middleware auth.js */
         Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
             if (message !== null) {
-                if (message.timestamp >= CURRENT_TIMESTAMP - 60) {       /* On autorise une publication par minute */
+                if (message.timestamp >= CURRENT_TIMESTAMP - 60) {       /* On autorise un message par minute */
                     return res.status(400).json({ error: ERROR_WRONG_DATA });
                 }
             }

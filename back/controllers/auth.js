@@ -27,7 +27,7 @@ const SUCCESS = 'Opération achevée avec succès.';                       /* Qu
 const globalFunctions = require('../global/functions');
 
 // Permet de savoir si une adresse électronique est dans la base de données.
-async function doesUserExist(res, email) {
+async function doesUserExist(email) {
     return User.findOne({ where: { email: email } }).then((user) => {
         if (user === null) {
             return false;
@@ -53,7 +53,7 @@ exports.register = (req, res) => {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { email, password, firstName, name } = req.body;
-        doesUserExist(res, email).then(doesUserExist => {
+        doesUserExist(email).then(doesUserExist => {
             if (doesUserExist !== false) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
@@ -83,7 +83,7 @@ exports.login = (req, res) => {
             return res.status(400).json({ error: ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;
-        doesUserExist(res, email).then(doesUserExist => {
+        doesUserExist(email).then(doesUserExist => {
             if (doesUserExist === false) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }

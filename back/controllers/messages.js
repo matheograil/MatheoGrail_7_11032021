@@ -1,7 +1,7 @@
 /*
  * Importation des modèles.
  */
-const { Message } = require('../sequelize');
+const { Message, Comment } = require('../sequelize');
 
 
 /*
@@ -61,9 +61,9 @@ exports.newMessage = (req, res) => {
                 userId: userId,
                 timestamp: CURRENT_TIMESTAMP
             });
-            newMessage.save().then(() => {
-                res.status(200).json({ message: SUCCESS });
-            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+            newMessage.save()
+                .then(() => res.status(200).json({ message: SUCCESS }))
+                .catch(() => res.status(500).json({ error: ERROR_SERVER }));
         }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };
@@ -103,14 +103,14 @@ exports.editMessage = (req, res) => {
         }
         const id = req.params.id;
         const { userId, content } = req.body;
-        Message.update({ content: content, timestamp: CURRENT_TIMESTAMP }, { where: { id: id, userId: userId } }).then((message) => {
+        Message.update({ content: content, timestamp: CURRENT_TIMESTAMP }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
             if (message === 0) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
             res.status(200).json({ message: SUCCESS });
         }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-}
+};
 
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
@@ -120,11 +120,13 @@ exports.delMessage = (req, res) => {
         }
         const id = req.params.id;
         const userId = req.body.userId;
-        Message.destroy({ where: { id: id, userId: userId } }).then((message) => {
+        Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
             if (message === 0) {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
-            res.status(200).json({ message: SUCCESS });
+            Comment.destroy({ where: { linkedMessage: id, userId: userId } })
+                .then(() => res.status(200).json({ message: SUCCESS }))
+                .catch(() => res.status(500).json({ error: ERROR_SERVER }));
         }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
     }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
 };

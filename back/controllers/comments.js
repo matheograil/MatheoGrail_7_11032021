@@ -45,10 +45,8 @@ exports.newComment = (req, res) => {
                 return res.status(400).json({ error: ERROR_WRONG_DATA });
             }
             Comment.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((comment) => {
-                if (comment !== null) {
-                    if (comment.timestamp >= CURRENT_TIMESTAMP - 60) {       /* On autorise un commentaire par minute */
-                        return res.status(400).json({ error: ERROR_WRONG_DATA });
-                    }
+                if (comment !== null && comment.timestamp >= CURRENT_TIMESTAMP - 60) {      /* On autorise un commentaire par minute */
+                    return res.status(400).json({ error: ERROR_WRONG_DATA });
                 }
                 const newComment = Comment.build({
                     linkedMessage: linkedMessage,

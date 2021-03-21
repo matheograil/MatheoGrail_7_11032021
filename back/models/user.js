@@ -1,4 +1,4 @@
-// Modèle de la table des utilisateurs.
+// Table 'users'.
 module.exports = (sequelize, type) => {
     return sequelize.define('users', {
         id: {
@@ -7,7 +7,7 @@ module.exports = (sequelize, type) => {
             autoIncrement: true
         },
         firstName: type.STRING(50),
-        name: type.STRING(50),
+        lastName: type.STRING(50),
         email: type.STRING(50),
         password: type.STRING(120)
     });

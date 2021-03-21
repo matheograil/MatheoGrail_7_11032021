@@ -1,4 +1,4 @@
-// Modèle de la table des commentaires.
+// Table 'comments'.
 module.exports = (sequelize, type) => {
     return sequelize.define('comments', {
         id: {

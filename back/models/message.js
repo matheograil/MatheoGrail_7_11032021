@@ -1,4 +1,4 @@
-// Modèle de la table des messages.
+// Table 'messages'.
 module.exports = (sequelize, type) => {
     return sequelize.define('messages', {
         id: {

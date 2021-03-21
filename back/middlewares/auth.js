@@ -1,6 +1,4 @@
-/*
- * Importation des modèles.
- */
+// Importation des modèles.
 const { User } = require('../sequelize');
 
 
@@ -14,9 +12,8 @@ const jsonwebtoken = require('jsonwebtoken');
 /*
  * Déclaration des constantes.
  */
-const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
-const ERROR_SERVER = 'Une erreur est survenue.';                        /* Quand une erreur interne au serveur se produit */
-
+// Importation des variables globales.
+const globalVariables = require('../global/variables');
 
 /*
  * Middleware permettant de protéger certaines fonctions de l'API.
@@ -30,19 +27,19 @@ module.exports = (req, res, next) => {
     });
     AuthValidator.check().then(matched => {
         if (!matched) {
-            return res.status(400).json({ error: ERROR_WRONG_DATA });
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.body.userId;
         const token = req.headers.authorization;
         const decodedToken = jsonwebtoken.verify(token, process.env.JWT_TOKEN);
         if (userId !== decodedToken.userId) {                                   /* Vérification du jeton */
-            return res.status(400).json({ error: ERROR_WRONG_DATA });
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         User.findOne({ where: { id: decodedToken.userId } }).then((user) => {   /* Vérification de l'existence de l'utilisateur */
             if (user === null) {
-                return res.status(400).json({ error: ERROR_WRONG_DATA });
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             next();
-        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
 };

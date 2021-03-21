@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 
 // Protection contre les attaques par force brute (1 requête/seconde).
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
     max: 60

@@ -114,13 +114,26 @@ exports.delMessage = (req, res) => {
         }
         const id = req.params.id;
         const userId = req.body.userId;
-        Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
-            if (message === 0) {
-                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+        globalFunctions.isAdmin(User, userId).then(isAdmin => {
+            if (isAdmin === true) {
+                Message.destroy({ where: { id: id }, limit: 1 }).then((message) => {
+                    if (message === 0) {
+                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                    }
+                    Comment.destroy({ where: { linkedMessage: id } })
+                        .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
+                        .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            } else {
+                Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
+                    if (message === 0) {
+                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                    }
+                    Comment.destroy({ where: { linkedMessage: id, userId: userId } })
+                        .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
+                        .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
             }
-            Comment.destroy({ where: { linkedMessage: id, userId: userId } })
-                .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
         }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
     }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
 };

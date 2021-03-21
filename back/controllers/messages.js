@@ -1,6 +1,4 @@
-/*
- * Importation des modèles.
- */
+// Importation des modèles.
 const { Message, Comment } = require('../sequelize');
 
 

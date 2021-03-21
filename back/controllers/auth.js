@@ -1,6 +1,4 @@
-/*
- * Importation des modèles.
- */
+// Importation des modèles.
 const { User } = require('../sequelize');
 
 

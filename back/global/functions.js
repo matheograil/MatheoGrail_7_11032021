@@ -2,11 +2,25 @@
  * Déclaration des fonctions globales.
  */
 // Permet de vérifier des variables à partir de règles.
-async function areVariablesValid(res, rules) {
+async function areVariablesValid(rules) {
     return rules.check().then(matched => {
         if (!matched) {
             return false;
         }
     });
 };
-module.exports.areVariablesValid = areVariablesValid;
+
+async function isAdmin(model, userId) {
+    return model.findOne({ where: { id: userId } }).then((user) => {
+        if (user.isAdmin === 1) {
+            return true;
+        }
+    });
+};
+
+
+// Exportation des fonctions.
+module.exports = {
+    areVariablesValid,
+    isAdmin
+};

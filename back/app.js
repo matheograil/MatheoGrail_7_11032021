@@ -25,6 +25,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
+
 /*
  * Les différentes routes de notre application.
  */

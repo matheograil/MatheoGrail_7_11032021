@@ -13,10 +13,8 @@ const { Validator } = require('node-input-validator');
 /*
  * Déclaration des constantes.
  */
-const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
-const ERROR_SERVER = 'Une erreur est survenue.';                        /* Quand une erreur interne au serveur se produit */
-const SUCCESS = 'Opération achevée avec succès.';                       /* Quand tout se passe correctement */
-const CURRENT_TIMESTAMP = Math.floor(Date.now()/1000);
+// Importation des variables globales.
+const globalVariables = require('../global/variables');
 
 
 /*
@@ -37,27 +35,27 @@ exports.newComment = (req, res) => {
     });
     globalFunctions.areVariablesValid(res, newMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
-            return res.status(400).json({ error: ERROR_WRONG_DATA });
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const { userId, content, linkedMessage } = req.body;
         Message.findOne({ where: { id: linkedMessage } }).then((message) => {
             if (message === null) {
-                return res.status(400).json({ error: ERROR_WRONG_DATA });
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((comment) => {
-                if (comment !== null && comment.timestamp >= CURRENT_TIMESTAMP - 60) {      /* On autorise un commentaire par minute */
-                    return res.status(400).json({ error: ERROR_WRONG_DATA });
+                if (comment !== null && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {      /* On autorise un commentaire par minute */
+                    return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 const newComment = Comment.build({
                     linkedMessage: linkedMessage,
                     content: content,
                     userId: userId,
-                    timestamp: CURRENT_TIMESTAMP
+                    timestamp: globalVariables.CURRENT_TIMESTAMP
                 });
                 newComment.save()
-                    .then(() => res.status(200).json({ message: SUCCESS }))
-                    .catch(() => res.status(500).json({ error: ERROR_SERVER }));
-            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+                    .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
+                    .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
 };

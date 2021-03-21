@@ -15,9 +15,8 @@ const jsonwebtoken = require('jsonwebtoken');
 /*
  * Déclaration des constantes.
  */
-const ERROR_WRONG_DATA = 'Les données envoyées ne sont pas valides.';   /* Quand les données envoyées sont invalides */
-const ERROR_SERVER = 'Une erreur est survenue.';                        /* Quand une erreur interne au serveur se produit */
-const SUCCESS = 'Opération achevée avec succès.';                       /* Quand tout se passe correctement */
+// Importation des variables globales.
+const globalVariables = require('../global/variables');
 
 
 /*
@@ -44,32 +43,32 @@ async function doesUserExist(email) {
 exports.register = (req, res) => {
     const RegisterValidator = new Validator(req.body, {
         firstName: 'required|string|maxLength:50',
-        name: 'required|string|maxLength:50',
+        lastName: 'required|string|maxLength:50',
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
     globalFunctions.areVariablesValid(res, RegisterValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
-            return res.status(400).json({ error: ERROR_WRONG_DATA });
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const { email, password, firstName, name } = req.body;
+        const { email, password, firstName, lastName } = req.body;
         doesUserExist(email).then(doesUserExist => {
             if (doesUserExist !== false) {
-                return res.status(400).json({ error: ERROR_WRONG_DATA });
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             bcrypt.hash(password, 10).then(hash => {
                 const newUser = User.build({
                     firstName: firstName,
-                    name: name,
+                    lastName: lastName,
                     email: email,
                     password: hash
                 });
                 newUser.save()
-                    .then(() => res.status(200).json({ message: SUCCESS }))
-                    .catch(() => res.status(500).json({ error: ERROR_SERVER }));
-            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+                    .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
+                    .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
 };
 
 // Connexion.
@@ -80,16 +79,16 @@ exports.login = (req, res) => {
     });
     globalFunctions.areVariablesValid(res, LoginValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
-            return res.status(400).json({ error: ERROR_WRONG_DATA });
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;
         doesUserExist(email).then(doesUserExist => {
             if (doesUserExist === false) {
-                return res.status(400).json({ error: ERROR_WRONG_DATA });
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             bcrypt.compare(password, doesUserExist.password).then(valid => {
                 if (!valid) {
-                    return res.status(400).json({ error: ERROR_WRONG_DATA });
+                    return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 res.status(200).json({
                     userId : doesUserExist.id,
@@ -103,7 +102,7 @@ exports.login = (req, res) => {
                         }
                     )
                 });
-            }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: ERROR_SERVER }));
+            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
 };

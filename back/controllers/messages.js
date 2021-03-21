@@ -1,5 +1,5 @@
 // Importation des modèles.
-const { Message, Comment } = require('../sequelize');
+const { Message, Comment, User } = require('../sequelize');
 
 
 /*
@@ -30,7 +30,7 @@ function IdValidator(req) {
         id: 'required|integer|maxLength:11'
     });
     return IdValidator;
-}
+};
 
 
 /*
@@ -41,7 +41,7 @@ exports.newMessage = (req, res) => {
     const newMessageValidator = new Validator(req.body, {
         content: 'required|string|maxLength:3000'
     });
-    globalFunctions.areVariablesValid(res, newMessageValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(newMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -71,7 +71,7 @@ exports.getAllMessages = (req, res) => {
 
 // Affichage d'un message.
 exports.getMessage = (req, res) => {
-    globalFunctions.areVariablesValid(res, IdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(IdValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -91,7 +91,7 @@ exports.editMessage = (req, res) => {
         id: 'required|integer|maxLength:11',
         content: 'required|string|maxLength:3000'
     });
-    globalFunctions.areVariablesValid(res, editMessageValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(editMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -108,7 +108,7 @@ exports.editMessage = (req, res) => {
 
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
-    globalFunctions.areVariablesValid(res, IdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(IdValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }

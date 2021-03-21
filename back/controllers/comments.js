@@ -31,7 +31,7 @@ exports.newComment = (req, res) => {
         linkedMessage: 'required|integer|maxLength:11',
         content: 'required|string|maxLength:3000'
     });
-    globalFunctions.areVariablesValid(res, newMessageValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(newMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }

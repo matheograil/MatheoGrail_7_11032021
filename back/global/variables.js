@@ -10,6 +10,8 @@ const SUCCESS = 'Opération achevée avec succès.';
 // Timestamp actuel.
 const CURRENT_TIMESTAMP = Math.floor(Date.now()/1000);
 
+
+// Exportation des variables.
 module.exports = {
     ERROR_WRONG_DATA,
     ERROR_SERVER,

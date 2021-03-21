@@ -15,6 +15,14 @@ const jsonwebtoken = require('jsonwebtoken');
 // Importation des variables globales.
 const globalVariables = require('../global/variables');
 
+
+/*
+ * Déclaration des fonctions.
+ */
+// Importation des functions globales.
+const globalFunctions = require('../global/functions');
+
+
 /*
  * Middleware permettant de protéger certaines fonctions de l'API.
  * Par conséquent, on vérifie le jeton mais aussi l'existence de l'utilisateur. 
@@ -25,8 +33,8 @@ module.exports = (req, res, next) => {
         token: 'required|string|maxLength:286',
         userId: 'required|integer|maxLength:11'
     });
-    AuthValidator.check().then(matched => {
-        if (!matched) {
+    globalFunctions.areVariablesValid(AuthValidator).then(areVariablesValid => {
+        if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.body.userId;

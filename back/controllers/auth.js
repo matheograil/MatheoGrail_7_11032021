@@ -45,7 +45,7 @@ exports.register = (req, res) => {
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    globalFunctions.areVariablesValid(res, RegisterValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(RegisterValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -75,7 +75,7 @@ exports.login = (req, res) => {
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    globalFunctions.areVariablesValid(res, LoginValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(LoginValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }

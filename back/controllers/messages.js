@@ -45,7 +45,8 @@ exports.newMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const { content, userId } = req.body;   /* Variable 'userId' déjà vérifiée par le Middleware auth.js */
+        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        content = req.body.content;
         Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
             if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {      /* On autorise un message par minute */
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
@@ -93,8 +94,9 @@ exports.editMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const id = req.params.id;
-        const { userId, content } = req.body;
+        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        id = req.params.id,
+        content = req.body.content;
         Message.update({ content: content, timestamp: globalVariables.CURRENT_TIMESTAMP }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
             if (message === 0) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
@@ -110,8 +112,8 @@ exports.delMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const id = req.params.id;
-        const userId = req.body.userId;
+        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        id = req.params.id;
         globalFunctions.isAdmin(User, userId).then(isAdmin => {
             if (isAdmin === true) {
                 Message.destroy({ where: { id: id }, limit: 1 }).then((message) => {

@@ -35,7 +35,8 @@ exports.newComment = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const { userId, content, linkedMessage } = req.body;
+        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        { content, linkedMessage } = req.body;
         Message.findOne({ where: { id: linkedMessage } }).then((message) => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });

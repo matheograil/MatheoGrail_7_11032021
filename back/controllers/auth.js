@@ -35,7 +35,7 @@ async function doesUserExist(email) {
 
 
 /*
- * Les différentes fonctions de notre API.
+ * Les différentes fonctions de notre route.
  */
 // Inscription.
 exports.register = (req, res) => {

@@ -23,7 +23,7 @@ const globalFunctions = require('../global/functions');
 
 
 /*
- * Les différentes fonctions de notre API.
+ * Les différentes fonctions de notre route.
  */
 // Publication d'un commentaire.
 exports.newComment = (req, res) => {

@@ -45,10 +45,10 @@ exports.newMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         content = req.body.content;
         Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
-            if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {      /* On autorise un message par minute */
+            if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un message par minute */
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             const newMessage = Message.build({
@@ -94,7 +94,7 @@ exports.editMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id,
         content = req.body.content;
         Message.update({ content: content, timestamp: globalVariables.CURRENT_TIMESTAMP }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
@@ -112,7 +112,7 @@ exports.delMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
         globalFunctions.isAdmin(User, userId).then(isAdmin => {
             if (isAdmin === true) {

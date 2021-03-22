@@ -35,14 +35,14 @@ exports.newComment = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const userId = req.headers.user_id,     /* Variable déjà vérifiée par le middleware 'auth.js' */
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         { content, linkedMessage } = req.body;
         Message.findOne({ where: { id: linkedMessage } }).then((message) => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((comment) => {
-                if (comment !== null && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {      /* On autorise un commentaire par minute */
+                if (comment !== null && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un commentaire par minute */
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 const newComment = Comment.build({

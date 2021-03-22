@@ -29,7 +29,7 @@ async function doesUserExist(email) {
         if (user === null) {
             return false;
         }
-        return user;   /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
+        return user;            /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
     });
 };
 

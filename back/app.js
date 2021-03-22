@@ -1,3 +1,6 @@
+// Meilleur affichage des erreurs.
+require('pretty-error').start();
+
 // Utilisation du framework Express.
 const express = require('express');
 const app = express();
@@ -6,9 +9,6 @@ const app = express();
 app.listen(3000,() => {
     console.log('Serveur opérationnel.')
 });
-
-// Meilleur affichage des erreurs.
-require('pretty-error').start();
 
 // Utilisation de 'helmet' pour contrer les attaques connues.
 const helmet = require('helmet');

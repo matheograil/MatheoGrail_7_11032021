@@ -23,7 +23,7 @@ const globalFunctions = require('../global/functions');
 
 
 /*
- * Les différentes fonctions de notre API.
+ * Les différentes fonctions de notre route.
  */
 // Publication d'un commentaire.
 exports.newComment = (req, res) => {
@@ -35,13 +35,14 @@ exports.newComment = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const { userId, content, linkedMessage } = req.body;
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        { content, linkedMessage } = req.body;
         Message.findOne({ where: { id: linkedMessage } }).then((message) => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((comment) => {
-                if (comment !== null && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {      /* On autorise un commentaire par minute */
+                if (comment !== null && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un commentaire par minute */
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 const newComment = Comment.build({
@@ -50,10 +51,8 @@ exports.newComment = (req, res) => {
                     userId: userId,
                     timestamp: globalVariables.CURRENT_TIMESTAMP
                 });
-                newComment.save()
-                    .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                    .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                newComment.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+            });
+        });
+    });
 };

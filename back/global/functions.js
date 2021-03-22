@@ -10,6 +10,7 @@ async function areVariablesValid(rules) {
     });
 };
 
+// Permet de savoir si un utilisateur est administrateur.
 async function isAdmin(model, userId) {
     return model.findOne({ where: { id: userId } }).then((user) => {
         if (user.isAdmin === 1) {

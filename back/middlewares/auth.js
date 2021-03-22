@@ -29,25 +29,29 @@ const globalFunctions = require('../global/functions');
  * Car un compte peut avoir été supprimé alors que son jeton sera toujours valide.
  */
 module.exports = (req, res, next) => {
-    const AuthValidator = new Validator({ token: req.headers.authorization, userId: req.body.userId }, {
-        token: 'required|string|maxLength:286',
+    const AuthValidator = new Validator({ authorizationToken: req.headers.authorization_token, userId: req.headers.user_id }, {
+        authorizationToken: 'required|string|maxLength:286',
         userId: 'required|integer|maxLength:11'
     });
     globalFunctions.areVariablesValid(AuthValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const userId = req.body.userId;
-        const token = req.headers.authorization;
-        const decodedToken = jsonwebtoken.verify(token, process.env.JWT_TOKEN);
-        if (userId !== decodedToken.userId) {                                   /* Vérification du jeton */
-            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-        }
-        User.findOne({ where: { id: decodedToken.userId } }).then((user) => {   /* Vérification de l'existence de l'utilisateur */
-            if (user === null) {
+        const userId = req.headers.user_id,
+        authorizationToken = req.headers.authorization_token;
+        try {
+            const decodedToken = jsonwebtoken.verify(authorizationToken, process.env.JWT_TOKEN);
+            if (userId != decodedToken.userId) {            /* Vérification du jeton */
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
-            next();
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            User.findOne({ where: { id: decodedToken.userId } }).then((user) => {           /* Vérification de l'existence de l'utilisateur */
+                if (user === null) {
+                    return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                }
+                next();
+            });
+        } catch {
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+        }
+    });
 };

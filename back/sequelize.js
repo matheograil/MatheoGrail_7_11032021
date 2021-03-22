@@ -14,6 +14,7 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
     }
 });
 
+
 /*
  * Les différents modèles.
  */
@@ -26,6 +27,7 @@ const Message = MessageModel(sequelize, Sequelize);
 // Table 'comments'.
 const CommentModel = require('./models/comment');
 const Comment = CommentModel(sequelize, Sequelize);
+
 
 // Synchronisation de la base de données avec les modèles.
 sequelize.sync({ force: true }).then(() => {

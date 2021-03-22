@@ -34,7 +34,7 @@ function IdValidator(req) {
 
 
 /*
- * Les différentes fonctions de notre API.
+ * Les différentes fonctions de notre route.
  */
 // Publication d'un message.
 exports.newMessage = (req, res) => {
@@ -45,9 +45,10 @@ exports.newMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const { content, userId } = req.body;   /* Variable 'userId' déjà vérifiée par le Middleware auth.js */
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        content = req.body.content;
         Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
-            if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {      /* On autorise un message par minute */
+            if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un message par minute */
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             const newMessage = Message.build({
@@ -55,18 +56,16 @@ exports.newMessage = (req, res) => {
                 userId: userId,
                 timestamp: globalVariables.CURRENT_TIMESTAMP
             });
-            newMessage.save()
-                .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            newMessage.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+        });
+    });
 };
 
 // Affichage des messages.
 exports.getAllMessages = (req, res) => {
     Message.findAll({ order: [[ 'id', 'DESC' ]] }).then((messages) => {
         res.status(200).json(messages);
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+    });
 };
 
 // Affichage d'un message.
@@ -81,8 +80,8 @@ exports.getMessage = (req, res) => {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json(message);
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        });
+    });
 };
 
 // Modification d'un message.
@@ -95,15 +94,16 @@ exports.editMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const id = req.params.id;
-        const { userId, content } = req.body;
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        id = req.params.id,
+        content = req.body.content;
         Message.update({ content: content, timestamp: globalVariables.CURRENT_TIMESTAMP }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
             if (message === 0) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json({ message: SUCCESS });
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        });
+    });
 };
 
 // Suppression d'un message.
@@ -112,28 +112,24 @@ exports.delMessage = (req, res) => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
-        const id = req.params.id;
-        const userId = req.body.userId;
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        id = req.params.id;
         globalFunctions.isAdmin(User, userId).then(isAdmin => {
             if (isAdmin === true) {
                 Message.destroy({ where: { id: id }, limit: 1 }).then((message) => {
                     if (message === 0) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
-                    Comment.destroy({ where: { linkedMessage: id } })
-                        .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                        .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-                }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                    Comment.destroy({ where: { linkedMessage: id } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                });
             } else {
                 Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
                     if (message === 0) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
-                    Comment.destroy({ where: { linkedMessage: id, userId: userId } })
-                        .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                        .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-                }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                    Comment.destroy({ where: { linkedMessage: id, userId: userId } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                });
             }
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        });
+    });
 };

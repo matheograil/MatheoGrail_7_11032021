@@ -29,13 +29,13 @@ async function doesUserExist(email) {
         if (user === null) {
             return false;
         }
-        return user;   /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
+        return user;            /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
     });
 };
 
 
 /*
- * Les différentes fonctions de notre API.
+ * Les différentes fonctions de notre route.
  */
 // Inscription.
 exports.register = (req, res) => {
@@ -61,12 +61,10 @@ exports.register = (req, res) => {
                     email: email,
                     password: hash
                 });
-                newUser.save()
-                    .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                    .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                newUser.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+            });
+        });
+    });
 };
 
 // Connexion.
@@ -100,7 +98,7 @@ exports.login = (req, res) => {
                         }
                     )
                 });
-            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            });
+        });
+    });
 };

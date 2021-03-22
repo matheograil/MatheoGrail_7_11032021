@@ -41,7 +41,6 @@ exports.newMessage = (req, res) => {
     const newMessageValidator = new Validator(req.body, {
         content: 'required|string|maxLength:3000'
     });
-    console.log('hey');
     globalFunctions.areVariablesValid(newMessageValidator).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });

@@ -26,8 +26,7 @@ app.use(limiter);
 require('dotenv').config();
 
 // Permet de manipuler les données reçues.
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+app.use(express.json());
 
 
 /*

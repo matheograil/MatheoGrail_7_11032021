@@ -55,18 +55,16 @@ exports.newMessage = (req, res) => {
                 userId: userId,
                 timestamp: globalVariables.CURRENT_TIMESTAMP
             });
-            newMessage.save()
-                .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+            newMessage.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+        });
+    });
 };
 
 // Affichage des messages.
 exports.getAllMessages = (req, res) => {
     Message.findAll({ order: [[ 'id', 'DESC' ]] }).then((messages) => {
         res.status(200).json(messages);
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+    });
 };
 
 // Affichage d'un message.
@@ -81,8 +79,8 @@ exports.getMessage = (req, res) => {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json(message);
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        });
+    });
 };
 
 // Modification d'un message.
@@ -102,8 +100,8 @@ exports.editMessage = (req, res) => {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json({ message: SUCCESS });
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        });
+    });
 };
 
 // Suppression d'un message.
@@ -120,20 +118,16 @@ exports.delMessage = (req, res) => {
                     if (message === 0) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
-                    Comment.destroy({ where: { linkedMessage: id } })
-                        .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                        .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-                }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                    Comment.destroy({ where: { linkedMessage: id } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                });
             } else {
                 Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
                     if (message === 0) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
-                    Comment.destroy({ where: { linkedMessage: id, userId: userId } })
-                        .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                        .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-                }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                    Comment.destroy({ where: { linkedMessage: id, userId: userId } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                });
             }
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+        });
+    });
 };

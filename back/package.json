@@ -2,7 +2,7 @@
   "name": "matheograil_7_11032021_back",
   "version": "0.0.1",
   "description": "Créez un réseau social d’entreprise (back-end).",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +26,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
     "node-input-validator": "^4.4.0",
+    "pretty-error": "^3.0.3",
     "sequelize": "^6.5.0"
   }
 }

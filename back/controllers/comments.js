@@ -50,10 +50,8 @@ exports.newComment = (req, res) => {
                     userId: userId,
                     timestamp: globalVariables.CURRENT_TIMESTAMP
                 });
-                newComment.save()
-                    .then(() => res.status(200).json({ message: globalVariables.SUCCESS }))
-                    .catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-            }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-        }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
-    }).catch(() => res.status(500).json({ error: globalVariables.ERROR_SERVER }));
+                newComment.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+            });
+        });
+    });
 };

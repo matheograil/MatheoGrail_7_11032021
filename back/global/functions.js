@@ -1,11 +1,5 @@
 // Importation des modèles.
-const { User } = require('../sequelize');
-
-
-/*
- * Importation des modules.
- */
-const fs = require('fs');
+const { User, Message } = require('../sequelize');
 
 
 /*
@@ -29,13 +23,13 @@ async function isAdmin(userId) {
     });
 };
 
-// Permet supprimer une image.
-async function deleteImage(filename) {
-    return fs.unlink(`./public/images/${filename}`, err => {
-        if (err) {
-            return('Error');
+// Permet de renvoyer un message à partir de son 'id'.
+async function findOneMessage(id) {
+    return Message.findOne({ where: { id: id } }).then((message) => {
+        if (message === null) {
+            return false;
         }
-        return('Success');
+        return message;
     });
 };
 
@@ -44,5 +38,5 @@ async function deleteImage(filename) {
 module.exports = {
     areVariablesValid,
     isAdmin,
-    deleteImage
+    findOneMessage
 };

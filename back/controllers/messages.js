@@ -123,7 +123,7 @@ exports.editMessage = (req, res) => {
             if (message === 0) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
-            res.status(200).json({ message: SUCCESS });
+            res.status(200).json({ message: globalVariables.SUCCESS });
         });
     });
 };

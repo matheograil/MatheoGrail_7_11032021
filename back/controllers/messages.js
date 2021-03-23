@@ -37,7 +37,7 @@ function IdValidator(req) {
 async function deleteImage(filename) {
     fs.unlink(`./public/images/${filename}`, err => {
         if (err) {
-            return false;
+            throw 'Error.';
         }
     });
 };
@@ -136,7 +136,10 @@ exports.delMessage = (req, res) => {
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
-        Message.findOne({ where: { id: id } }).then((message) => {
+        globalFunctions.findOneMessage(id).then((message) => {
+            if (message === null) {
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+            }
             const filename = message.imageUrl.split('/public/images/')[1];
             globalFunctions.isAdmin(userId).then(isAdmin => {
                 if (isAdmin === true) {

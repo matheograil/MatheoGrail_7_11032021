@@ -1,1 +1,1 @@
-Dossier comprenant les images.
+Ce dossier contient toutes les images stockées.

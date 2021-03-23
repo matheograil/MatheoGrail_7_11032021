@@ -1,5 +1,5 @@
 // Importation des modèles.
-const { Message, Comment } = require('../sequelize');
+const { Comment } = require('../sequelize');
 
 
 /*
@@ -52,6 +52,24 @@ exports.newComment = (req, res) => {
                     timestamp: globalVariables.CURRENT_TIMESTAMP
                 });
                 newComment.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+            });
+        });
+    });
+};
+
+// Affichage des commentaires.
+exports.getComments = (req, res) => {
+    globalFunctions.areVariablesValid(globalFunctions.IdValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+        }
+        const id = req.params.id;
+        globalFunctions.findOneMessage(id).then((message) => {
+            if (message === false) {
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+            }
+            Comment.findAll({ where: { linkedMessage: id }, order: [[ 'id', 'DESC' ]] }).then((comments) => {
+                res.status(200).json(comments);
             });
         });
     });

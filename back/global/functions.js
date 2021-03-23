@@ -1,3 +1,7 @@
+// Importation des modèles.
+const { User, Message } = require('../sequelize');
+
+
 /*
  * Déclaration des fonctions globales.
  */
@@ -11,11 +15,21 @@ async function areVariablesValid(rules) {
 };
 
 // Permet de savoir si un utilisateur est administrateur.
-async function isAdmin(model, userId) {
-    return model.findOne({ where: { id: userId } }).then((user) => {
+async function isAdmin(userId) {
+    return User.findOne({ where: { id: userId } }).then((user) => {
         if (user.isAdmin === 1) {
             return true;
         }
+    });
+};
+
+// Permet de renvoyer un message à partir de son 'id'.
+async function findOneMessage(id) {
+    return Message.findOne({ where: { id: id } }).then((message) => {
+        if (message === null) {
+            return false;
+        }
+        return message;
     });
 };
 
@@ -23,5 +37,6 @@ async function isAdmin(model, userId) {
 // Exportation des fonctions.
 module.exports = {
     areVariablesValid,
-    isAdmin
+    isAdmin,
+    findOneMessage
 };

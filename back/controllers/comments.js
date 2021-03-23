@@ -37,7 +37,7 @@ exports.newComment = (req, res) => {
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         { content, linkedMessage } = req.body;
-        Message.findOne({ where: { id: linkedMessage } }).then((message) => {
+        globalFunctions.findOneMessage(linkedMessage).then((message) => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }

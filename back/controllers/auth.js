@@ -89,13 +89,9 @@ exports.login = (req, res) => {
                 res.status(200).json({
                     userId : doesUserExist.id,
                     token: jsonwebtoken.sign(
-                        {
-                            userId: doesUserExist.id
-                        },
+                        { userId: doesUserExist.id },
                         process.env.JWT_TOKEN,
-                        {
-                            expiresIn: '12h'
-                        }
+                        { expiresIn: '12h' }
                     )
                 });
             });

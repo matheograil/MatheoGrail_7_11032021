@@ -1,11 +1,12 @@
 // Importation des modèles.
-const { Message, Comment, User } = require('../sequelize');
+const { Message, Comment } = require('../sequelize');
 
 
 /*
  * Importation des modules.
  */
 const { Validator } = require('node-input-validator');
+const fs = require('fs');
 
 
 /*
@@ -32,6 +33,15 @@ function IdValidator(req) {
     return IdValidator;
 };
 
+// Permet supprimer une image.
+async function deleteImage(filename) {
+    fs.unlink(`./public/images/${filename}`, err => {
+        if (err) {
+            throw 'Error.';
+        }
+    });
+};
+
 
 /*
  * Les différentes fonctions de notre route.
@@ -42,19 +52,31 @@ exports.newMessage = (req, res) => {
         content: 'required|string|maxLength:3000'
     });
     globalFunctions.areVariablesValid(newMessageValidator).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        let filename = null,
+        imageUrl = null;
+        if (req.file) {
+            filename = req.file.filename;
+            imageUrl = `${req.protocol}://${req.get('host')}/public/images/${filename}`;
+        } else if (areVariablesValid === false) {
+            if (req.file) {
+                deleteImage(filename);
+            }
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         content = req.body.content;
         Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
             if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un message par minute */
+                if (req.file) {
+                    deleteImage(filename);
+                }
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             const newMessage = Message.build({
                 content: content,
                 userId: userId,
-                timestamp: globalVariables.CURRENT_TIMESTAMP
+                timestamp: globalVariables.CURRENT_TIMESTAMP,
+                imageUrl: imageUrl
             });
             newMessage.save().then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
         });
@@ -75,7 +97,7 @@ exports.getMessage = (req, res) => {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
-        Message.findOne({ where: { id: id } }).then((message) => {
+        globalFunctions.findOneMessage(id).then((message) => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
@@ -114,22 +136,32 @@ exports.delMessage = (req, res) => {
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
-        globalFunctions.isAdmin(User, userId).then(isAdmin => {
-            if (isAdmin === true) {
-                Message.destroy({ where: { id: id }, limit: 1 }).then((message) => {
-                    if (message === 0) {
-                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-                    }
-                    Comment.destroy({ where: { linkedMessage: id } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
-                });
-            } else {
-                Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
-                    if (message === 0) {
-                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-                    }
-                    Comment.destroy({ where: { linkedMessage: id, userId: userId } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
-                });
+        globalFunctions.findOneMessage(id).then((message) => {
+            if (message === null) {
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
+            const filename = message.imageUrl.split('/public/images/')[1];
+            globalFunctions.isAdmin(userId).then(isAdmin => {
+                if (isAdmin === true) {
+                    Message.destroy({ where: { id: id }, limit: 1 }).then((message) => {
+                        if (message === 0) {
+                            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                        } else if (filename !== null) {
+                            deleteImage(filename);
+                        }
+                        Comment.destroy({ where: { linkedMessage: id } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                    });
+                } else {
+                    Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
+                        if (message === 0) {
+                            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                        } else if (filename !== null) {
+                            deleteImage(filename);
+                        }
+                        Comment.destroy({ where: { linkedMessage: id, userId: userId } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                    });
+                }
+            });
         });
     });
 };

@@ -8,6 +8,7 @@ module.exports = (sequelize, type) => {
         },
         content: type.STRING(3000),
         userId: type.INTEGER(11),
-        timestamp: type.STRING(20)
+        timestamp: type.STRING(20),
+        imageUrl: type.STRING(180)
     });
 };

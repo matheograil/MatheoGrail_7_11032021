@@ -43,4 +43,8 @@ const commentsRoutes = require('./routes/comments');
 app.use('/api/comments', commentsRoutes);
 
 
+// Permet d'accéder aux images statiques.
+const path = require('path');
+app.use('/public/images', express.static(path.join(__dirname, './public/images')));
+
 module.exports = app;

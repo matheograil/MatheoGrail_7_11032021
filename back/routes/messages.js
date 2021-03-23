@@ -24,7 +24,7 @@ router.get('/', auth, messagesCtrl.getAllMessages);         /* GET : api/publica
 // Affichage d'un message.
 router.get('/:id', auth, messagesCtrl.getMessage);          /* GET : api/publication/messages/:id */
 // Modification d'un message.
-router.put('/:id', auth, messagesCtrl.editMessage);         /* PUT : api/publication/messages/:id */
+router.put('/:id', auth, multer, messagesCtrl.editMessage);         /* PUT : api/publication/messages/:id */
 // Suppression d'un message.
 router.delete('/:id', auth, messagesCtrl.delMessage);           /* DELETE : api/publication/messages/:id */
 

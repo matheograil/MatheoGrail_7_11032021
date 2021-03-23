@@ -1,3 +1,13 @@
+// Importation des modèles.
+const { User } = require('../sequelize');
+
+
+/*
+ * Importation des modules.
+ */
+const fs = require('fs');
+
+
 /*
  * Déclaration des fonctions globales.
  */
@@ -11,11 +21,21 @@ async function areVariablesValid(rules) {
 };
 
 // Permet de savoir si un utilisateur est administrateur.
-async function isAdmin(model, userId) {
-    return model.findOne({ where: { id: userId } }).then((user) => {
+async function isAdmin(userId) {
+    return User.findOne({ where: { id: userId } }).then((user) => {
         if (user.isAdmin === 1) {
             return true;
         }
+    });
+};
+
+// Permet supprimer une image.
+async function deleteImage(filename) {
+    return fs.unlink(`./public/images/${filename}`, err => {
+        if (err) {
+            return('Error');
+        }
+        return('Success');
     });
 };
 
@@ -23,5 +43,6 @@ async function isAdmin(model, userId) {
 // Exportation des fonctions.
 module.exports = {
     areVariablesValid,
-    isAdmin
+    isAdmin,
+    deleteImage
 };

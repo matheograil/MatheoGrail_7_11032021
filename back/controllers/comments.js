@@ -38,7 +38,7 @@ exports.newComment = (req, res) => {
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         { content, linkedMessage } = req.body;
         globalFunctions.findOneMessage(linkedMessage).then((message) => {
-            if (message === false) {
+            if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((comment) => {
@@ -65,7 +65,7 @@ exports.getComments = (req, res) => {
         }
         const id = req.params.id;
         globalFunctions.findOneMessage(id).then((message) => {
-            if (message === false) {
+            if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findAll({ where: { linkedMessage: id }, order: [[ 'id', 'DESC' ]] }).then((comments) => {

@@ -32,9 +32,6 @@ async function isAdmin(userId) {
 // Permet de renvoyer un message à partir de son 'id'.
 async function findOneMessage(id) {
     return Message.findOne({ where: { id: id } }).then((message) => {
-        if (message === null) {
-            return false;
-        }
         return message;
     });
 };

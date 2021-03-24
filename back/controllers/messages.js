@@ -87,7 +87,7 @@ exports.getMessage = (req, res) => {
         }
         const id = req.params.id;
         globalFunctions.findOneMessage(id).then((message) => {
-            if (message === false) {
+            if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json(message);
@@ -144,7 +144,7 @@ exports.delMessage = (req, res) => {
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
         globalFunctions.findOneMessage(id).then((message) => {
-            if (message === false) {
+            if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             const filename = message.imageUrl.split('/public/images/')[1];

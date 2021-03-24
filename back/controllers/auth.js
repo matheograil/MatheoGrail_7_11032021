@@ -26,10 +26,7 @@ const globalFunctions = require('../global/functions');
 // Permet de savoir si une adresse électronique est dans la base de données.
 async function doesUserExist(email) {
     return User.findOne({ where: { email: email } }).then((user) => {
-        if (user === null) {
-            return false;
-        }
-        return user;            /* Permet de vérifier la correspondance du mot de passe, mais aussi pour démarrer la session */
+        return user;
     });
 };
 
@@ -51,7 +48,7 @@ exports.register = (req, res) => {
         }
         const { email, password, firstName, lastName } = req.body;
         doesUserExist(email).then(doesUserExist => {
-            if (doesUserExist !== false) {
+            if (doesUserExist !== null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             bcrypt.hash(password, 10).then(hash => {
@@ -79,7 +76,7 @@ exports.login = (req, res) => {
         }
         const { email, password } = req.body;
         doesUserExist(email).then(doesUserExist => {
-            if (doesUserExist === false) {
+            if (doesUserExist === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             bcrypt.compare(password, doesUserExist.password).then(valid => {

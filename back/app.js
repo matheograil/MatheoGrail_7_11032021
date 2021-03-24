@@ -41,6 +41,9 @@ app.use('/api/messages', messagesRoutes);
 // Commentaires.
 const commentsRoutes = require('./routes/comments');
 app.use('/api/comments', commentsRoutes);
+// Comptes.
+const accountsRoutes = require('./routes/accounts');
+app.use('/api/accounts', accountsRoutes);
 
 
 // Permet d'accéder aux images statiques.

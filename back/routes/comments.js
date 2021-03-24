@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
+
+/*
+ * Importation des middlewares.
+ */
 // Authentification nécessaire.
 const auth = require('../middlewares/auth');
+
 
 const commentsCtrl = require('../controllers/comments');
 

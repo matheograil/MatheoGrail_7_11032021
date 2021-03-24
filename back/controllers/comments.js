@@ -74,3 +74,31 @@ exports.getComments = (req, res) => {
         });
     });
 };
+
+// Suppression d'un commentaire.
+exports.delComment = (req, res) => {
+    globalFunctions.areVariablesValid(globalFunctions.IdValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+        }
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        id = req.params.id;
+        globalFunctions.isAdmin(userId).then(isAdmin => {
+            if (isAdmin === true) {
+                Comment.destroy({ where: { id: id }, limit: 1 }).then((comment) => {
+                    if (comment === 0) {
+                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                    }
+                    res.status(200).json({ message: globalVariables.SUCCESS });
+                });
+            } else {
+                Comment.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((comment) => {
+                    if (comment === 0) {
+                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                    }
+                    res.status(200).json({ message: globalVariables.SUCCESS });
+                });
+            }
+        });
+    });
+};

@@ -81,7 +81,7 @@ exports.getAllMessages = (req, res) => {
 
 // Affichage d'un message.
 exports.getMessage = (req, res) => {
-    globalFunctions.areVariablesValid(globalFunctions.IdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -97,11 +97,7 @@ exports.getMessage = (req, res) => {
 
 // Modification d'un message.
 exports.editMessage = (req, res) => {
-    const editMessageValidator = new Validator({ id: req.params.id, content: req.body.content }, {
-        id: 'required|integer|maxLength:11',
-        content: 'required|string|maxLength:3000'
-    });
-    globalFunctions.areVariablesValid(editMessageValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(globalFunctions.idContentValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -117,7 +113,7 @@ exports.editMessage = (req, res) => {
                 }
                 const filename = req.file.filename,
                 imageUrl = `${req.protocol}://${req.get('host')}/public/images/${filename}`;
-                Message.update({ content: content, timestamp: globalVariables.CURRENT_TIMESTAMP, imageUrl: imageUrl }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
+                Message.update({ content: content, imageUrl: imageUrl }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
                     if (message === 0) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
@@ -125,7 +121,7 @@ exports.editMessage = (req, res) => {
                 });
             });
         } else {
-            Message.update({ content: content, timestamp: globalVariables.CURRENT_TIMESTAMP }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
+            Message.update({ content: content }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
                 if (message === 0) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
@@ -137,7 +133,7 @@ exports.editMessage = (req, res) => {
 
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
-    globalFunctions.areVariablesValid(globalFunctions.IdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }

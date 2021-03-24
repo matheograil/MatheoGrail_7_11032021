@@ -36,11 +36,21 @@ async function findOneMessage(id) {
     });
 };
 
-function IdValidator(req) {
-    const IdValidator = new Validator(req.params, {
+// Permet de vérifier les variables des routes 'get' et 'delete'.
+function idValidator(req) {
+    const idValidator = new Validator(req.params, {
         id: 'required|integer|maxLength:11'
     });
-    return IdValidator;
+    return idValidator;
+};
+
+// Permet de vérifier les variables des routes 'put'.
+function idContentValidator(req) {
+    const idContentValidator = new Validator({ id: req.params.id, content: req.body.content }, {
+        id: 'required|integer|maxLength:11',
+        content: 'required|string|maxLength:3000'
+    });
+    return idContentValidator;
 };
 
 
@@ -49,5 +59,6 @@ module.exports = {
     areVariablesValid,
     isAdmin,
     findOneMessage,
-    IdValidator
+    idValidator,
+    idContentValidator
 };

@@ -14,6 +14,8 @@ const commentsCtrl = require('../controllers/comments');
 router.post('/', auth, commentsCtrl.newComment);            /* POST : api/publication/comments */
 // Affichage des commentaires.
 router.get('/:id', auth, commentsCtrl.getComments);         /* GET : api/publication/comments/:id */
+// Modification d'un commentaire.
+router.put('/:id', auth, commentsCtrl.editComment);         /* PUT : api/publication/comments/:id */
 // Suppression d'un commentaire.
 router.delete('/:id', auth, commentsCtrl.delComment);           /* DELETE : api/publication/comments/:id */
 

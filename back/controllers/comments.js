@@ -59,7 +59,7 @@ exports.newComment = (req, res) => {
 
 // Affichage des commentaires.
 exports.getComments = (req, res) => {
-    globalFunctions.areVariablesValid(globalFunctions.IdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -75,9 +75,27 @@ exports.getComments = (req, res) => {
     });
 };
 
+// Modification d'un commentaire.
+exports.editComment = (req, res) => {
+    globalFunctions.areVariablesValid(globalFunctions.idContentValidator(req)).then(areVariablesValid => {
+        if (areVariablesValid === false) {
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+        }
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        id = req.params.id,
+        content = req.body.content;
+        Comment.update({ content: content }, { where: { id: id, userId: userId }, limit: 1 }).then((comment) => {
+            if (comment === 0) {
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+            }
+            res.status(200).json({ message: globalVariables.SUCCESS });
+        });
+    });
+};
+
 // Suppression d'un commentaire.
 exports.delComment = (req, res) => {
-    globalFunctions.areVariablesValid(globalFunctions.IdValidator(req)).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
         if (areVariablesValid === false) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }

@@ -32,7 +32,7 @@ exports.newComment = (req, res) => {
         content: 'required|string|maxLength:3000'
     });
     globalFunctions.areVariablesValid(newCommentValidator).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
@@ -60,7 +60,7 @@ exports.newComment = (req, res) => {
 // Affichage des commentaires.
 exports.getComments = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
@@ -78,7 +78,7 @@ exports.getComments = (req, res) => {
 // Modification d'un commentaire.
 exports.editComment = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idContentValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
@@ -96,13 +96,13 @@ exports.editComment = (req, res) => {
 // Suppression d'un commentaire.
 exports.delComment = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
         globalFunctions.isAdmin(userId).then(isAdmin => {
-            if (isAdmin === true) {
+            if (isAdmin) {
                 Comment.destroy({ where: { id: id }, limit: 1 }).then(comment => {
                     if (comment === 0) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });

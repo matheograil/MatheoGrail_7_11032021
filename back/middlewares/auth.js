@@ -34,7 +34,7 @@ module.exports = (req, res, next) => {
         userId: 'required|integer|maxLength:11'
     });
     globalFunctions.areVariablesValid(AuthValidator).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,

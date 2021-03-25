@@ -43,7 +43,7 @@ exports.newMessage = (req, res) => {
     globalFunctions.areVariablesValid(newMessageValidator).then(areVariablesValid => {
         let filename = null,
         imageUrl = null;
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             if (req.file) {
                 deleteImage(filename);
             }
@@ -82,7 +82,7 @@ exports.getAllMessages = (req, res) => {
 // Affichage de messages liés à un utilisateur.
 exports.getMessages = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
@@ -95,7 +95,7 @@ exports.getMessages = (req, res) => {
 // Affichage d'un message.
 exports.getMessage = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
@@ -111,7 +111,7 @@ exports.getMessage = (req, res) => {
 // Modification d'un message.
 exports.editMessage = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idContentValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
@@ -148,18 +148,20 @@ exports.editMessage = (req, res) => {
 // Suppression d'un message.
 exports.delMessage = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
         globalFunctions.findOneMessage(id).then(message => {
+            let filename = null;
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+            } else if (message.imageUrl !== null) {
+                filename = message.imageUrl.split('/public/images/')[1];
             }
-            const filename = message.imageUrl.split('/public/images/')[1];
             globalFunctions.isAdmin(userId).then(isAdmin => {
-                if (isAdmin === true) {
+                if (isAdmin) {
                     Message.destroy({ where: { id: id }, limit: 1 }).then(message => {
                         if (message === 0) {
                             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });

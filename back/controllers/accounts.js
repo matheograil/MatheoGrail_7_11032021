@@ -28,7 +28,7 @@ const globalFunctions = require('../global/functions');
 // Récupération des détails d'un utilisateur.
 exports.getDetails = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
@@ -49,7 +49,7 @@ exports.editParameters = (req, res) => {
         description: 'required|string|maxLength:200'
     });
     globalFunctions.areVariablesValid(editParametersValidator).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
@@ -60,7 +60,7 @@ exports.editParameters = (req, res) => {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             globalFunctions.arePasswordsValid(password, user.password).then(arePasswordsValid => {
-                if (arePasswordsValid === false) {
+                if (!arePasswordsValid) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 } else if (req.body.newPassword === undefined) {
                     User.update({ description: description }, { where: { id: userId }, limit: 1 }).then(user => {

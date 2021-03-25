@@ -28,12 +28,12 @@ const globalFunctions = require('../global/functions');
 // Récupération des détails d'un utilisateur.
 exports.getDetails = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
         User.findOne({ where: { id: id }, attributes: ['firstName', 'lastName', 'description', 'isAdmin'] }).then(user => {
-            if (user === null) {
+            if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json(user);
@@ -49,32 +49,32 @@ exports.editParameters = (req, res) => {
         description: 'required|string|maxLength:200'
     });
     globalFunctions.areVariablesValid(editParametersValidator).then(areVariablesValid => {
-        if (areVariablesValid === false) {
+        if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         password = req.body.password,
         description = req.body.description;
         User.findOne({ where: { id: userId } }).then(user => {
-            if (user === null) {
+            if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             globalFunctions.arePasswordsValid(password, user.password).then(arePasswordsValid => {
-                if (arePasswordsValid === false) {
+                if (!arePasswordsValid) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-                } else if (req.body.newPassword === undefined) {
+                } else if (!req.body.newPassword) {
                     User.update({ description: description }, { where: { id: userId }, limit: 1 }).then(user => {
-                        if (user === 0) {
+                        if (!user) {
                             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                         }
                         res.status(200).json({ message: globalVariables.SUCCESS });
                     });
                 }
-                else if (req.body.newPassword !== undefined) {
+                else if (req.body.newPassword) {
                     const newPassword = req.body.newPassword;
                     globalFunctions.passwordHash(newPassword).then(hash => {
                         User.update({ description: description, password: hash }, { where: { id: userId }, limit: 1 }).then(user => {
-                            if (user === 0) {
+                            if (!user) {
                                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                             }
                             res.status(200).json({ message: globalVariables.SUCCESS });

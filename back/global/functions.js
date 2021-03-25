@@ -13,61 +13,47 @@ const { Validator } = require('node-input-validator');
  * Déclaration des fonctions globales.
  */
 // Permet de vérifier des variables à partir de règles.
-async function areVariablesValid(rules) {
-    return rules.check().then(areVariablesValid => {
-        if (!areVariablesValid) {
-            return false;
-        }
-    });
+function areVariablesValid(rules) {
+    return rules.check();
 };
 
 // Permet de comparer deux mots de passe.
-async function arePasswordsValid(firstPassword, lastPassword) {
-    return bcrypt.compare(firstPassword, lastPassword).then(arePasswordsValid => {
-        if (!arePasswordsValid) {
-            return false;
-        }
-    });
+function arePasswordsValid(firstPassword, lastPassword) {
+    return bcrypt.compare(firstPassword, lastPassword);
 };
 
 // Permet de savoir si un utilisateur est administrateur.
-async function isAdmin(userId) {
-    return User.findOne({ where: { id: userId } }).then(isAdmin => {
-        if (isAdmin.isAdmin === 1) {
+function isAdmin(userId) {
+    return User.findOne({ where: { id: userId } }).then(user => {
+        if (user.isAdmin === 1) {
             return true;
         }
     });
 };
 
 // Permet de hacher un mot de passe.
-async function passwordHash(password) {
-    return bcrypt.hash(password, 10).then(hash => {
-        return hash;
-    });
+function passwordHash(password) {
+    return bcrypt.hash(password, 10);
 };
 
 // Permet de renvoyer un message à partir de son 'id'.
-async function findOneMessage(id) {
-    return Message.findOne({ where: { id: id } }).then(message => {
-        return message;
-    });
+function findOneMessage(id) {
+    return Message.findOne({ where: { id: id } });
 };
 
 // Permet de vérifier les variables des routes 'get' et 'delete'.
 function idValidator(req) {
-    const idValidator = new Validator(req.params, {
+    return new Validator(req.params, {
         id: 'required|integer|maxLength:11'
     });
-    return idValidator;
 };
 
 // Permet de vérifier les variables des routes 'put'.
 function idContentValidator(req) {
-    const idContentValidator = new Validator({ id: req.params.id, content: req.body.content }, {
+    return new Validator({ id: req.params.id, content: req.body.content }, {
         id: 'required|integer|maxLength:11',
         content: 'required|string|maxLength:3000'
     });
-    return idContentValidator;
 };
 
 

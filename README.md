@@ -24,3 +24,12 @@ Dans le dossier de l'application `/back`, faire les commandes suivantes :
 
 Si tout s'est bien passé, un message dans la console devrait apparaître :
 > Connexion à la base de données réussie.
+## Configuration du _front-end_
+* Le _front-end_ nécessite l'installation de _Node.js_, Vue.js et _NPM (avec nodemon)_.
+## Démarrage du _front-end_
+Dans le dossier de l'application `/front`, faire les commandes suivantes :
+* `npm install`
+* `npm run serve`
+
+Si tout s'est bien passé, un message dans la console devrait apparaître :
+>  Compiled successfully.

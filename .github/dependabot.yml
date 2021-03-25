@@ -4,3 +4,7 @@ updates:
     directory: "/back"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/front"
+    schedule:
+      interval: "daily"

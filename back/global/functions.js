@@ -39,6 +39,13 @@ async function isAdmin(userId) {
     });
 };
 
+// Permet de hacher un mot de passe.
+async function passwordHash(password) {
+    return bcrypt.hash(password, 10).then(hash => {
+        return hash;
+    });
+};
+
 // Permet de renvoyer un message à partir de son 'id'.
 async function findOneMessage(id) {
     return Message.findOne({ where: { id: id } }).then(message => {
@@ -69,6 +76,7 @@ module.exports = {
     areVariablesValid,
     arePasswordsValid,
     isAdmin,
+    passwordHash,
     findOneMessage,
     idValidator,
     idContentValidator

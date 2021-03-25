@@ -62,15 +62,36 @@ exports.editParameters = (req, res) => {
                 if (arePasswordsValid === false) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
-
-
-                User.update({ description: description }, { where: { userId: userId }, limit: 1 }).then(user => {
-                    if (user === 0) {
-                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-                    }
-                    res.status(200).json({ message: globalVariables.SUCCESS });
-                });
-
+                if (req.body.newPassword === undefined && req.body.description === undefined) {
+                    const description = null;
+                    User.update({ description: description }, { where: { id: userId }, limit: 1 }).then(user => {
+                        if (user === 0) {
+                            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                        }
+                        return res.status(200).json({ message: globalVariables.SUCCESS });
+                    });
+                }
+                if (req.body.newPassword === undefined && req.body.description !== undefined) {
+                    const description = req.body.description;
+                    User.update({ description: description }, { where: { id: userId }, limit: 1 }).then(user => {
+                        if (user === 0) {
+                            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                        }
+                        return res.status(200).json({ message: globalVariables.SUCCESS });
+                    });
+                }
+                if (req.body.newPassword !== undefined && req.body.description !== undefined) {
+                    const description = req.body.description;
+                    const newPassword = req.body.newPassword;
+                    globalFunctions.passwordHash(newPassword).then(hash => {
+                        User.update({ description: description, password: hash }, { where: { id: userId }, limit: 1 }).then(user => {
+                            if (user === 0) {
+                                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                            }
+                            return res.status(200).json({ message: globalVariables.SUCCESS });
+                        });
+                    });
+                }
             });
         });
     });

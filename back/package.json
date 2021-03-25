@@ -1,6 +1,6 @@
 {
-  "name": "matheograil_7_11032021_back",
-  "version": "0.0.1",
+  "name": "back",
+  "version": "1.0",
   "description": "Créez un réseau social d’entreprise (back-end).",
   "main": "app.js",
   "scripts": {

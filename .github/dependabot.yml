@@ -1,6 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: ""
+    directory: "/back"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/front"
     schedule:
       interval: "daily"

@@ -21,6 +21,11 @@ const globalVariables = require('../global/variables');
 // Importation des functions globales.
 const globalFunctions = require('../global/functions');
 
+// Permet de renvoyer un utilisateur à partir de son 'id'.
+function findOneUser(id) {
+    return User.findOne({ where: { id: id } });
+};
+
 
 /*
  * Les différentes fonctions de notre route.
@@ -32,7 +37,7 @@ exports.getDetails = (req, res) => {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
-        User.findOne({ where: { id: id }, attributes: ['firstName', 'lastName', 'description', 'isAdmin'] }).then(user => {
+        User.findOne({ where: { id: id }, attributes: ['firstName', 'lastName', 'description', 'isAdmin', 'isDisabled'] }).then(user => {
             if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
@@ -55,7 +60,7 @@ exports.editParameters = (req, res) => {
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         password = req.body.password,
         description = req.body.description;
-        User.findOne({ where: { id: userId } }).then(user => {
+        findOneUser(userId).then(user => {
             if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
@@ -81,6 +86,36 @@ exports.editParameters = (req, res) => {
                         });
                     });
                 }
+            });
+        });
+    });
+};
+
+// Désactivation du compte.
+exports.deleteMyAccount = (req, res) => {
+    const deleteMyAccountValidator = new Validator(req.body, {
+        password: 'required|string|lengthBetween:10,100'
+    });
+    globalFunctions.areVariablesValid(deleteMyAccountValidator).then(areVariablesValid => {
+        if (!areVariablesValid) {
+            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+        }
+        const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
+        password = req.body.password;
+        findOneUser(userId).then(user => {
+            if (!user) {
+                return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+            }
+            globalFunctions.arePasswordsValid(password, user.password).then(arePasswordsValid => {
+                if (!arePasswordsValid) {
+                    return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                }
+                User.update({ isDisabled: 1 }, { where: { id: userId }, limit: 1 }).then(user => {
+                    if (!user) {
+                        return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
+                    }
+                    res.status(200).json({ message: globalVariables.SUCCESS });
+                });
             });
         });
     });

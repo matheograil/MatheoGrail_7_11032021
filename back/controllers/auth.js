@@ -47,7 +47,7 @@ exports.register = (req, res) => {
         }
         const { email, password, firstName, lastName } = req.body;
         doesUserExist(email).then(doesUserExist => {
-            if (doesUserExist !== null) {
+            if (doesUserExist) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             globalFunctions.passwordHash(password).then(hash => {
@@ -75,7 +75,7 @@ exports.login = (req, res) => {
         }
         const { email, password } = req.body;
         doesUserExist(email).then(doesUserExist => {
-            if (doesUserExist === null) {
+            if (!doesUserExist) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             globalFunctions.arePasswordsValid(password, doesUserExist.password).then(arePasswordsValid => {

@@ -45,7 +45,7 @@ module.exports = (req, res, next) => {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             User.findOne({ where: { id: decodedToken.userId } }).then(user => {           /* Vérification de l'existence de l'utilisateur */
-                if (user === null) {
+                if (!user) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 next();

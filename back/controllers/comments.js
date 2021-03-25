@@ -38,11 +38,11 @@ exports.newComment = (req, res) => {
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         { content, linkedMessage } = req.body;
         globalFunctions.findOneMessage(linkedMessage).then(message => {
-            if (message === null) {
+            if (!message) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then(comment => {
-                if (comment !== null && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un commentaire par minute */
+                if (comment && comment.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un commentaire par minute */
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 const newComment = Comment.build({
@@ -65,7 +65,7 @@ exports.getComments = (req, res) => {
         }
         const id = req.params.id;
         globalFunctions.findOneMessage(id).then(message => {
-            if (message === null) {
+            if (!message) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             Comment.findAll({ where: { linkedMessage: id }, order: [[ 'id', 'DESC' ]] }).then(comments => {
@@ -85,7 +85,7 @@ exports.editComment = (req, res) => {
         id = req.params.id,
         content = req.body.content;
         Comment.update({ content: content }, { where: { id: id, userId: userId }, limit: 1 }).then(comment => {
-            if (comment === 0) {
+            if (!comment) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json({ message: globalVariables.SUCCESS });
@@ -104,14 +104,14 @@ exports.delComment = (req, res) => {
         globalFunctions.isAdmin(userId).then(isAdmin => {
             if (isAdmin) {
                 Comment.destroy({ where: { id: id }, limit: 1 }).then(comment => {
-                    if (comment === 0) {
+                    if (!comment) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
                     res.status(200).json({ message: globalVariables.SUCCESS });
                 });
             } else {
                 Comment.destroy({ where: { id: id, userId: userId }, limit: 1 }).then(comment => {
-                    if (comment === 0) {
+                    if (!comment) {
                         return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                     }
                     res.status(200).json({ message: globalVariables.SUCCESS });

@@ -33,7 +33,7 @@ exports.getDetails = (req, res) => {
         }
         const id = req.params.id;
         User.findOne({ where: { id: id }, attributes: ['firstName', 'lastName', 'description', 'isAdmin'] }).then(user => {
-            if (user === null) {
+            if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             res.status(200).json(user);
@@ -56,25 +56,25 @@ exports.editParameters = (req, res) => {
         password = req.body.password,
         description = req.body.description;
         User.findOne({ where: { id: userId } }).then(user => {
-            if (user === null) {
+            if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             globalFunctions.arePasswordsValid(password, user.password).then(arePasswordsValid => {
                 if (!arePasswordsValid) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-                } else if (req.body.newPassword === undefined) {
+                } else if (!req.body.newPassword) {
                     User.update({ description: description }, { where: { id: userId }, limit: 1 }).then(user => {
-                        if (user === 0) {
+                        if (!user) {
                             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                         }
                         res.status(200).json({ message: globalVariables.SUCCESS });
                     });
                 }
-                else if (req.body.newPassword !== undefined) {
+                else if (req.body.newPassword) {
                     const newPassword = req.body.newPassword;
                     globalFunctions.passwordHash(newPassword).then(hash => {
                         User.update({ description: description, password: hash }, { where: { id: userId }, limit: 1 }).then(user => {
-                            if (user === 0) {
+                            if (!user) {
                                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                             }
                             res.status(200).json({ message: globalVariables.SUCCESS });

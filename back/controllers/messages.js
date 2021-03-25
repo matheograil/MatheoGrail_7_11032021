@@ -24,7 +24,7 @@ const globalFunctions = require('../global/functions');
 
 // Permet supprimer une image.
 async function deleteImage(filename) {
-    fs.unlink(`./public/images/${filename}`, err => {
+    fs.unlink(`./public/images/${filename}`).then(err => {
         if (err) {
             throw 'Error.';
         }

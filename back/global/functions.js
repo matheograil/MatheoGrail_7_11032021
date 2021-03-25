@@ -5,6 +5,7 @@ const { User, Message } = require('../sequelize');
 /*
  * Importation des modules.
  */
+const bcrypt = require('bcrypt');
 const { Validator } = require('node-input-validator');
 
 
@@ -13,8 +14,17 @@ const { Validator } = require('node-input-validator');
  */
 // Permet de vérifier des variables à partir de règles.
 async function areVariablesValid(rules) {
-    return rules.check().then(matched => {
-        if (!matched) {
+    return rules.check().then(areVariablesValid => {
+        if (!areVariablesValid) {
+            return false;
+        }
+    });
+};
+
+// Permet de comparer deux mots de passe.
+async function arePasswordsValid(firstPassword, lastPassword) {
+    return bcrypt.compare(firstPassword, lastPassword).then(arePasswordsValid => {
+        if (!arePasswordsValid) {
             return false;
         }
     });
@@ -22,16 +32,23 @@ async function areVariablesValid(rules) {
 
 // Permet de savoir si un utilisateur est administrateur.
 async function isAdmin(userId) {
-    return User.findOne({ where: { id: userId } }).then((user) => {
-        if (user.isAdmin === 1) {
+    return User.findOne({ where: { id: userId } }).then(isAdmin => {
+        if (isAdmin.isAdmin === 1) {
             return true;
         }
     });
 };
 
+// Permet de hacher un mot de passe.
+async function passwordHash(password) {
+    return bcrypt.hash(password, 10).then(hash => {
+        return hash;
+    });
+};
+
 // Permet de renvoyer un message à partir de son 'id'.
 async function findOneMessage(id) {
-    return Message.findOne({ where: { id: id } }).then((message) => {
+    return Message.findOne({ where: { id: id } }).then(message => {
         return message;
     });
 };
@@ -57,7 +74,9 @@ function idContentValidator(req) {
 // Exportation des fonctions.
 module.exports = {
     areVariablesValid,
+    arePasswordsValid,
     isAdmin,
+    passwordHash,
     findOneMessage,
     idValidator,
     idContentValidator

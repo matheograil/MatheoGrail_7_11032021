@@ -16,7 +16,9 @@ const accountsCtrl = require('../controllers/accounts');
  * Les différentes fonctions de notre route.
  */
 // Récupération des détails d'un utilisateur.
-router.get('/details/:id', auth, accountsCtrl.getDetails);          /* POST : api/accounts/details/:id */
+router.get('/details/:id', auth, accountsCtrl.getDetails);          /* GET : api/accounts/details/:id */
+// Modification des paramètres d'un utilisateur.
+router.put('/me', auth, accountsCtrl.editParameters);            /* PUT : api/accounts/me */
 
 
 module.exports = router;

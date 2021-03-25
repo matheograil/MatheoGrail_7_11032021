@@ -24,7 +24,7 @@ const globalFunctions = require('../global/functions');
 
 // Permet supprimer une image.
 async function deleteImage(filename) {
-    fs.unlink(`./public/images/${filename}`, err => {
+    fs.unlink(`./public/images/${filename}`).then(err => {
         if (err) {
             throw 'Error.';
         }
@@ -54,7 +54,7 @@ exports.newMessage = (req, res) => {
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         content = req.body.content;
-        Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then((message) => {
+        Message.findOne({ where: { userId: userId }, order: [[ 'id', 'DESC' ]] }).then(message => {
             if (message !== null && message.timestamp >= globalVariables.CURRENT_TIMESTAMP - 60) {          /* On autorise un message par minute */
                 if (req.file) {
                     deleteImage(filename);
@@ -74,7 +74,7 @@ exports.newMessage = (req, res) => {
 
 // Affichage des messages.
 exports.getAllMessages = (req, res) => {
-    Message.findAll({ order: [[ 'id', 'DESC' ]] }).then((messages) => {
+    Message.findAll({ order: [[ 'id', 'DESC' ]] }).then(messages => {
         res.status(200).json(messages);
     });
 };
@@ -86,7 +86,7 @@ exports.getMessages = (req, res) => {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
-        Message.findAll({ where: { userId: id }, order: [[ 'id', 'DESC' ]] }).then((messages) => {
+        Message.findAll({ where: { userId: id }, order: [[ 'id', 'DESC' ]] }).then(messages => {
             res.status(200).json(messages);
         });
     });
@@ -100,7 +100,7 @@ exports.getMessage = (req, res) => {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
-        globalFunctions.findOneMessage(id).then((message) => {
+        globalFunctions.findOneMessage(id).then(message => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
@@ -119,7 +119,7 @@ exports.editMessage = (req, res) => {
         id = req.params.id,
         content = req.body.content;
         if (req.file) {
-            globalFunctions.findOneMessage(id).then((message) => {
+            globalFunctions.findOneMessage(id).then(message => {
                 if (message === null) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 } else if (message.imageUrl !== null) {
@@ -135,7 +135,7 @@ exports.editMessage = (req, res) => {
                 });
             });
         } else {
-            Message.update({ content: content }, { where: { id: id, userId: userId }, limit: 1 }).then((message) => {
+            Message.update({ content: content }, { where: { id: id, userId: userId }, limit: 1 }).then(message => {
                 if (message === 0) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
@@ -153,14 +153,14 @@ exports.delMessage = (req, res) => {
         }
         const userId = req.headers.user_id,         /* Variable déjà vérifiée par le middleware 'auth.js' */
         id = req.params.id;
-        globalFunctions.findOneMessage(id).then((message) => {
+        globalFunctions.findOneMessage(id).then(message => {
             if (message === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             const filename = message.imageUrl.split('/public/images/')[1];
             globalFunctions.isAdmin(userId).then(isAdmin => {
                 if (isAdmin === true) {
-                    Message.destroy({ where: { id: id }, limit: 1 }).then((message) => {
+                    Message.destroy({ where: { id: id }, limit: 1 }).then(message => {
                         if (message === 0) {
                             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                         } else if (filename !== null) {
@@ -169,7 +169,7 @@ exports.delMessage = (req, res) => {
                         Comment.destroy({ where: { linkedMessage: id } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
                     });
                 } else {
-                    Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then((message) => {
+                    Message.destroy({ where: { id: id, userId: userId }, limit: 1 }).then(message => {
                         if (message === 0) {
                             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                         } else if (filename !== null) {

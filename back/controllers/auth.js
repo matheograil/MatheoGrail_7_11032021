@@ -5,7 +5,6 @@ const { User } = require('../sequelize');
 /*
  * Importation des modules.
  */
-const bcrypt = require('bcrypt');
 const { Validator } = require('node-input-validator');
 const jsonwebtoken = require('jsonwebtoken');
 
@@ -51,7 +50,7 @@ exports.register = (req, res) => {
             if (doesUserExist !== null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
-            bcrypt.hash(password, 10).then(hash => {
+            globalFunctions.passwordHash(password).then(hash => {
                 const newUser = User.build({
                     firstName: firstName,
                     lastName: lastName,
@@ -79,8 +78,8 @@ exports.login = (req, res) => {
             if (doesUserExist === null) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
-            bcrypt.compare(password, doesUserExist.password).then(valid => {
-                if (!valid) {
+            globalFunctions.arePasswordsValid(password, doesUserExist.password).then(arePasswordsValid => {
+                if (arePasswordsValid === false) {
                     return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
                 }
                 res.status(200).json({

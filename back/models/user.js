@@ -11,6 +11,7 @@ module.exports = (sequelize, type) => {
         description: type.STRING(200),
         email: type.STRING(50),
         password: type.STRING(120),
-        isAdmin: type.INTEGER(1)
+        isAdmin: type.INTEGER(1),
+        isDisabled: type.INTEGER(1)
     });
 };

@@ -55,19 +55,17 @@ async function findOneMessage(id) {
 
 // Permet de vérifier les variables des routes 'get' et 'delete'.
 function idValidator(req) {
-    const idValidator = new Validator(req.params, {
+    return new Validator(req.params, {
         id: 'required|integer|maxLength:11'
     });
-    return idValidator;
 };
 
 // Permet de vérifier les variables des routes 'put'.
 function idContentValidator(req) {
-    const idContentValidator = new Validator({ id: req.params.id, content: req.body.content }, {
+    return new Validator({ id: req.params.id, content: req.body.content }, {
         id: 'required|integer|maxLength:11',
         content: 'required|string|maxLength:3000'
     });
-    return idContentValidator;
 };
 
 

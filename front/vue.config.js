@@ -2,9 +2,9 @@
 module.exports = {
     chainWebpack: config => {
         config
-            .plugin('html')
+            .plugin("html")
             .tap(args => {
-                args[0].title = 'Groupomania';
+                args[0].title = "Groupomania";
                 return args;
             })
     }

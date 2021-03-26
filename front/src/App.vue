@@ -1,28 +1,49 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div id="app">
+        <div class="app__header">
+            <h1>Groupomania</h1>
+            <div class="app__nav">
+                <router-link to="/">Connexion</router-link> •
+                <router-link to="/register">Inscription</router-link>
+            </div>
+        </div>
+        <router-view/>
+    </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
-
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+    #app {
+        margin: auto;
+        max-width: 1300px;
+        font-family: Helvetica;
+        text-align: center;
+        color: #2c3e50;
+
+        .app__header {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            padding: 20px;
+
+            h1 {
+                padding: 10px;
+            }
+
+            @media screen and (max-width: 500px) {
+                flex-wrap: wrap;
+            }
+
+            .app__nav {
+                padding: 10px;
+
+                a {
+                    font-weight: bold;
+                    
+                    &.router-link-exact-active {
+                        color: #42b983;
+                    }
+                }
+            }
+        }
+    }
 </style>

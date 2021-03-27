@@ -18,15 +18,15 @@
     .register {
         .register__go {
             margin-top: 5px;
-                background-color: #4CAF50;
-                color: white;
-                padding: 15px 32px;
-                display: inline-block;
-                font-size: 16px;
-                border-radius: 10px;
-                font-weight: bold;
-                cursor:pointer;
-            }
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor:pointer;
+        }
 
         .register__form {
             display: flex;
@@ -37,11 +37,12 @@
                 width: 400px;
 
                 .register__input {
+                    outline-style: none;
                     margin: 5px;
                     width: 100%;
                     -webkit-appearance: none;
                     padding: 15px;
-                    border: 2px solid #42b983;
+                    border: 1px solid #2c3e50;
                     border-radius: 20px;
                     font-size: 15px;
                     font-family: Helvetica;

@@ -12,7 +12,7 @@
                 <input class='auth__input' type='password' v-model='passwordConfirmation' placeholder='Mot de passe'>
             </div>
         </div>
-        <a class='auth__go' v-on:click='register' type='button'>S'inscrire</a>
+        <a class='button' v-on:click='register' type='button'>S'inscrire</a>
     </div>
 </template>
 

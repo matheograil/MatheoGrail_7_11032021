@@ -9,7 +9,7 @@
                 <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
         </div>
-        <a class='auth__go' v-on:click='login' type='button'>Se connecter</a>
+        <a class='button' v-on:click='login' type='button'>Se connecter</a>
     </div>
 </template>
 

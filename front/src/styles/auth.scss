@@ -1,0 +1,41 @@
+.auth {
+    .auth__go {
+        margin-top: 5px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px 32px;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor:pointer;
+    }
+
+    .auth__form {
+        display: flex;
+        justify-content: center;
+
+        .auth__inputs {
+            margin-top: 10px;
+            width: 400px;
+
+            .auth__input {
+                outline-style: none;
+                margin: 5px;
+                width: calc(100% - 20px);
+                -webkit-appearance: none;
+                padding: 15px;
+                border: 1px solid #2c3e50;
+                border-radius: 20px;
+                font-size: 15px;
+                font-family: Helvetica;
+                box-sizing: border-box;
+            }
+
+            .auth__input::placeholder {
+                color: #2c3e50;
+                opacity: 1;
+            }
+        }
+    }
+}

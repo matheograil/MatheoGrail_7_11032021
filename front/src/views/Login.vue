@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-        <AuthMessage msg="Connectez-vous pour continuer..."/>
+        <h2 class="login__title">Connectez-vous pour continuer...</h2>
         <div class="login__form">
             <div class="login__inputs">
                 <input class="login__input" type="email" name="email" id="email" placeholder="Adresse électronique">
@@ -54,14 +54,3 @@
         }
     }
 </style>
-
-<script>
-    import AuthMessage from '@/components/AuthMessage.vue'
-
-    export default {
-        name: 'Login',
-        components: {
-            AuthMessage
-        }
-    }
-</script>

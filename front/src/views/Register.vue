@@ -1,6 +1,6 @@
 <template>
     <div class="register">
-        <AuthMessage msg="Vous pouvez aussi vous inscrire !"/>
+        <h2 class="login__title">Vous pouvez aussi vous inscrire !</h2>
         <div class="register__form">
             <div class="register__inputs">
                 <input class="register__input" type="text" name="firstName" id="firstName" placeholder="Prénom">
@@ -57,14 +57,3 @@
         }
     }
 </style>
-
-<script>
-    import AuthMessage from '@/components/AuthMessage.vue'
-
-    export default {
-        name: 'Register',
-        components: {
-            AuthMessage
-        }
-    }
-</script>

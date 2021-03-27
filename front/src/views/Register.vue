@@ -39,7 +39,7 @@
                 .register__input {
                     outline-style: none;
                     margin: 5px;
-                    width: 100%;
+                    width: calc(100% - 20px);
                     -webkit-appearance: none;
                     padding: 15px;
                     border: 1px solid #2c3e50;

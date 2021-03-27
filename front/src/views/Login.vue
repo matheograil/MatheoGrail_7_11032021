@@ -30,16 +30,15 @@
 
                 // Vérification des variables.
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if (!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50 ||
-                    !password || typeof password !== 'string' || password.length > 100 || password.length < 10) {
+                if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
+                    (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
                     return false
                 }
 
-                // Envoie des données à l'API.
                 // Utilisation de l'API.
                 const requestOptions = {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, password: password  })
                 };
                 fetch('http://localhost:3000/api/auth/login', requestOptions).then((response) => {

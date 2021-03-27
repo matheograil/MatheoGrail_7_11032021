@@ -14,3 +14,10 @@ a {
 a:link, a:visited {
     color: inherit;
 }
+
+#app {
+    margin: auto;
+    max-width: 1300px;
+    text-align: center;
+    color: $primary-color;
+}

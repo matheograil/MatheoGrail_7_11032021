@@ -1,3 +1,38 @@
+#app {
+    margin: auto;
+    max-width: 1300px;
+    font-family: Helvetica;
+    text-align: center;
+    color: #2c3e50;
+
+    .header {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        padding: 20px;
+
+        .header__title {
+            padding: 10px;
+        }
+
+        @media screen and (max-width: 500px) {
+            flex-wrap: wrap;
+        }
+
+        .header__nav {
+            padding: 10px;
+
+            a {
+                font-weight: bold;
+                
+                &.router-link-exact-active {
+                    color: #42b983;
+                }
+            }
+        }
+    }
+}
+
 .auth {
     .auth__status {
         margin: 10px;

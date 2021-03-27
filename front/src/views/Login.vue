@@ -12,5 +12,5 @@
 </template>
 
 <style lang="scss">
-    @import "../styles/auth.scss";
+    @import "../styles/auth.scss"
 </style>

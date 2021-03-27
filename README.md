@@ -11,7 +11,7 @@ Créez un réseau social d’entreprise.
 
 | Nom  | Description |
 | --- | --- |
-| **JWT_TOKEN** | Clé de chiffrement utilisée pour les sessions |
+| **JWT_TOKEN** | Clé de chiffrement utilisée pour les sessions (à modifier dès que possible) |
 | **DB_HOST** | Adresse IP/nom de domaine de la base de données |
 | **DB_USER** | Utilisateur de la base de données |
 | **DB_DATABASE** | Nom de la base de données |

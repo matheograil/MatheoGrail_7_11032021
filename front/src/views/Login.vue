@@ -1,6 +1,8 @@
 <template>
     <div class='auth'>
         <h2 class='auth__title'>Connectez-vous pour continuer...</h2>
+        <div class='auth__status' v-if="requestStatus === 'success'">✅ Vous êtes connecté(e) !</div>
+        <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
         <div class='auth__form'>
             <div class='auth__inputs'>
                 <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
@@ -16,7 +18,8 @@
         data: function () {
             return {
                 email: null,
-                password: null
+                password: null,
+                requestStatus: null
             }
         },
         methods: {
@@ -33,6 +36,20 @@
                 }
 
                 // Envoie des données à l'API.
+                // Utilisation de l'API.
+                const requestOptions = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, password: password  })
+                };
+                fetch('http://localhost:3000/api/auth/login', requestOptions).then((response) => {
+                    if (response.status === 200) {
+                        return this.requestStatus = 'success'
+                    }
+                    this.requestStatus = 'failure'
+                }).catch(() => {
+                    this.requestStatus = 'failure'
+                })
             }
         }
     }

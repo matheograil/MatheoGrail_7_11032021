@@ -1,6 +1,8 @@
 <template>
     <div class='auth'>
         <h2 class='auth__title'>Vous pouvez aussi vous inscrire !</h2>
+        <div class='auth__status' v-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
+        <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
         <div class='auth__form'>
             <div class='auth__inputs'>
                 <input class='auth__input' v-model='firstName' placeholder='Prénom'>
@@ -22,7 +24,8 @@
                 lastName: null,
                 email: null,
                 password: null,
-                passwordConfirmation: null
+                passwordConfirmation: null,
+                requestStatus: null
             }
         },
         methods: {
@@ -41,10 +44,23 @@
                     !email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50 ||
                     !password || typeof password !== 'string' || password.length > 100 || password.length < 10 ||
                     password !== passwordConfirmation) {
-                    return false
+                    return this.requestStatus = 'failure'
                 }
 
-                // Envoie des données à l'API.
+                // Utilisation de l'API.
+                const requestOptions = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ firstName: firstName, lastName: lastName, email: email, password: password  })
+                };
+                fetch('http://localhost:3000/api/auth/register', requestOptions).then((response) => {
+                    if (response.status === 200) {
+                        return this.requestStatus = 'success'
+                    }
+                    this.requestStatus = 'failure'
+                }).catch(() => {
+                    this.requestStatus = 'failure'
+                })
             }
         }
     }

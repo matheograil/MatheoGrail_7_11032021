@@ -1,8 +1,8 @@
 <template>
     <div id="app">
-        <div class="app__header">
-            <h1>Groupomania</h1>
-            <div class="app__nav">
+        <div class="header">
+            <h1 class="header__title">Groupomania</h1>
+            <div class="header__nav">
                 <router-link to="/">Connexion</router-link> •
                 <router-link to="/register">Inscription</router-link>
             </div>
@@ -19,13 +19,13 @@
         text-align: center;
         color: #2c3e50;
 
-        .app__header {
+        .header {
             display: flex;
             align-items: baseline;
             justify-content: center;
             padding: 20px;
 
-            h1 {
+            .header__title {
                 padding: 10px;
             }
 
@@ -33,7 +33,7 @@
                 flex-wrap: wrap;
             }
 
-            .app__nav {
+            .header__nav {
                 padding: 10px;
 
                 a {

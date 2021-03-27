@@ -1,70 +1,71 @@
 <template>
-    <div class="register">
-        <AuthMessage msg="Vous pouvez aussi vous inscrire !"/>
-        <div class="register__form">
-            <div class="register__inputs">
-                <input class="register__input" type="text" name="firstName" id="firstName" placeholder="Prénom">
-                <input class="register__input" type="text" name="lastName" id="lastName" placeholder="Nom">
-                <input class="register__input" type="email" name="email" id="email" placeholder="Adresse électronique">
-                <input class="register__input" type="password" name="password" id="password" placeholder="Mot de passe">
-                <input class="register__input" type="password" name="passwordConfirmation" id="passwordConfirmation" placeholder="Mot de passe">
+    <div class='auth'>
+        <h2 class='auth__title'>Vous pouvez aussi vous inscrire !</h2>
+        <div class='auth__status' v-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
+        <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
+        <div class='auth__form'>
+            <div class='auth__inputs'>
+                <input class='auth__input' v-model='firstName' placeholder='Prénom'>
+                <input class='auth__input' v-model='lastName' placeholder='Nom'>
+                <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
+                <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
+                <input class='auth__input' type='password' v-model='passwordConfirmation' placeholder='Mot de passe'>
             </div>
         </div>
-        <a class="register__go" type="button">S'inscrire</a>
+        <a class='auth__go' v-on:click='register' type='button'>S'inscrire</a>
     </div>
 </template>
 
-<style lang="scss">
-    .register {
-        .register__go {
-            margin-top: 5px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 32px;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor:pointer;
-        }
+<script>
+    export default {
+        data: function () {
+            return {
+                firstName: null,
+                lastName: null,
+                email: null,
+                password: null,
+                passwordConfirmation: null,
+                requestStatus: null
+            }
+        },
+        methods: {
+            register() {
+                // Déclaration des variables.
+                const firstName = this.firstName,
+                lastName = this.lastName,
+                email = this.email,
+                password = this.password,
+                passwordConfirmation = this.passwordConfirmation
 
-        .register__form {
-            display: flex;
-            justify-content: center;
-
-            .register__inputs {
-                margin-top: 10px;
-                width: 400px;
-
-                .register__input {
-                    outline-style: none;
-                    margin: 5px;
-                    width: calc(100% - 20px);
-                    -webkit-appearance: none;
-                    padding: 15px;
-                    border: 1px solid #2c3e50;
-                    border-radius: 20px;
-                    font-size: 15px;
-                    font-family: Helvetica;
-                    box-sizing: border-box;
+                // Vérification des variables.
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (!firstName || typeof firstName !== 'string' || firstName.length > 50 ||
+                    !lastName || typeof lastName !== 'string' || lastName.length > 50 ||
+                    !email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50 ||
+                    !password || typeof password !== 'string' || password.length > 100 || password.length < 10 ||
+                    password !== passwordConfirmation) {
+                    return this.requestStatus = 'failure'
                 }
 
-                .register__input::placeholder {
-                    color: #2c3e50;
-                    opacity: 1;
-                }
+                // Utilisation de l'API.
+                const requestOptions = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ firstName: firstName, lastName: lastName, email: email, password: password  })
+                };
+                fetch('http://localhost:3000/api/auth/register', requestOptions).then((response) => {
+                    if (response.status === 200) {
+                        return this.requestStatus = 'success'
+                    }
+                    this.requestStatus = 'failure'
+                }).catch(() => {
+                    this.requestStatus = 'failure'
+                })
             }
         }
     }
-</style>
-
-<script>
-    import AuthMessage from '@/components/AuthMessage.vue'
-
-    export default {
-        name: 'Register',
-        components: {
-            AuthMessage
-        }
-    }
 </script>
+
+<style lang='scss'>
+    @import '../styles/auth.scss'
+</style>

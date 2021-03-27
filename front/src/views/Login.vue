@@ -1,67 +1,60 @@
 <template>
-    <div class="login">
-        <AuthMessage msg="Connectez-vous pour continuer..."/>
-        <div class="login__form">
-            <div class="login__inputs">
-                <input class="login__input" type="email" name="email" id="email" placeholder="Adresse électronique">
-                <input class="login__input" type="password" name="password" id="password" placeholder="Mot de passe">
+    <div class='auth'>
+        <h2 class='auth__title'>Connectez-vous pour continuer...</h2>
+        <div class='auth__status' v-if="requestStatus === 'success'">✅ Vous êtes connecté(e) !</div>
+        <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
+        <div class='auth__form'>
+            <div class='auth__inputs'>
+                <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
+                <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
         </div>
-        <a class="login__go" type="button">Se connecter</a>
+        <a class='auth__go' v-on:click='login' type='button'>Se connecter</a>
     </div>
 </template>
 
-<style lang="scss">
-    .login {
-        .login__go {
-            margin-top: 5px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 32px;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor:pointer;
-        }
+<script>
+    export default {
+        data: function () {
+            return {
+                email: null,
+                password: null,
+                requestStatus: null
+            }
+        },
+        methods: {
+            login() {
+                // Déclaration des variables.
+                const email = this.email,
+                password = this.password
 
-        .login__form {
-            display: flex;
-            justify-content: center;
-
-            .login__inputs {
-                margin-top: 10px;
-                width: 400px;
-
-                .login__input {
-                    outline-style: none;
-                    margin: 5px;
-                    width: calc(100% - 20px);
-                    -webkit-appearance: none;
-                    padding: 15px;
-                    border: 1px solid #2c3e50;
-                    border-radius: 20px;
-                    font-size: 15px;
-                    font-family: Helvetica;
-                    box-sizing: border-box;
+                // Vérification des variables.
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50 ||
+                    !password || typeof password !== 'string' || password.length > 100 || password.length < 10) {
+                    return false
                 }
 
-                .login__input::placeholder {
-                    color: #2c3e50;
-                    opacity: 1;
-                }
+                // Envoie des données à l'API.
+                // Utilisation de l'API.
+                const requestOptions = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, password: password  })
+                };
+                fetch('http://localhost:3000/api/auth/login', requestOptions).then((response) => {
+                    if (response.status === 200) {
+                        return this.requestStatus = 'success'
+                    }
+                    this.requestStatus = 'failure'
+                }).catch(() => {
+                    this.requestStatus = 'failure'
+                })
             }
         }
     }
-</style>
-
-<script>
-    import AuthMessage from '@/components/AuthMessage.vue'
-
-    export default {
-        name: 'Login',
-        components: {
-            AuthMessage
-        }
-    }
 </script>
+
+<style lang='scss'>
+    @import '../styles/auth.scss'
+</style>

@@ -3,8 +3,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/back"
     schedule:
-      interval: "daily"
+      interval: "live"
   - package-ecosystem: "npm"
     directory: "/front"
     schedule:
-      interval: "daily"
+      interval: "live"

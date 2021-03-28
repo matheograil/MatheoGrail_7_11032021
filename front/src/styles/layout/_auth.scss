@@ -1,29 +1,40 @@
 #app {
     .auth {
-        .auth__status {
-            margin: 10px;
+        margin: 0 auto;
+        padding: 10px;
+        width: 425px;
+        text-align: center;
+
+        @media screen and (max-width: $breakpoint-alpha) {
+            width: calc(100% - 20px);
         }
+
+        .auth__title {
+            margin-bottom: 10px;
+        }
+
         .auth__form {
-            display: flex;
-            justify-content: center;
+            .auth__status {
+                margin: 10px;
+            }
+
             .auth__inputs {
-                margin-top: 10px;
-                width: 400px;
                 .auth__input {
-                    outline-style: none;
-                    margin: 5px;
-                    width: calc(100% - 20px);
+                    margin-top: 5px;
+                    width: 100%;
                     padding: 15px;
+                    outline-style: none;
+                    box-sizing: border-box;
                     font-size: 15px;
                     font-family: Helvetica;
                     -webkit-appearance: none;
                     border: 1px solid $primary-color;
-                    border-radius: 20px;
-                    box-sizing: border-box;
-                }
-                .auth__input::placeholder {
-                    color: $primary-color;
-                    opacity: 1;
+                    border-radius: 15px;
+
+                    &::placeholder {
+                        color: $primary-color;
+                        opacity: 1;
+                    }
                 }
             }
         }

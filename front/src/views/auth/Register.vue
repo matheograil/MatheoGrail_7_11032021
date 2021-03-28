@@ -2,7 +2,7 @@
     <div class='auth'>
         <h2 class='auth__title'>Vous pouvez aussi vous inscrire !</h2>
         <div class='auth__form'>
-            <div class='auth__status' v-if="isUserConnected !== false">✅ Redirection dans quelques instants...</div>
+            <div class='auth__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
             <div class='auth__status' v-else-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
             <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='auth__inputs'>
@@ -29,6 +29,12 @@
                 password: null,
                 passwordConfirmation: null,
                 requestStatus: null
+            }
+        },
+        created: function () {
+            if (this.isUserConnected !== false) {
+                // Redirection.
+                setTimeout(() => {  window.location.href = '/home' }, 3000)
             }
         },
         mixins: [globalMixins],

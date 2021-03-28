@@ -5,7 +5,15 @@
 </template>
 
 <script>
-    if (!JSON.parse(localStorage.getItem('userId')) || !JSON.parse(localStorage.getItem('token'))) {
-        window.location.href = '/login'
+    import globalMixins from '@/mixins/global'
+
+    export default {
+        mixins: [globalMixins],
+        created: function () {
+            if (this.isUserConnected === false) {
+                // Redirection.
+                window.location.href = '/'
+            }
+        }
     }
 </script>

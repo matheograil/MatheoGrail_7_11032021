@@ -13,8 +13,7 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: () => import('../views/auth/Register')
-    }
-    ,
+    },
     {
         path: '/home',
         name: 'Home',

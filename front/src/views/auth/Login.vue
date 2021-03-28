@@ -2,7 +2,7 @@
     <div class='auth'>
         <h2 class='auth__title'>Connectez-vous pour continuer...</h2>
         <div class='auth__form'>
-            <div class='auth__status' v-if="isUserConnected !== false">✅ Redirection dans quelques instants...</div>
+            <div class='auth__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
             <div class='auth__status' v-else-if="requestStatus === 'success'">✅ Vous êtes connecté(e), redirection dans quelques instants...</div>
             <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='auth__inputs'>
@@ -23,6 +23,12 @@
                 email: null,
                 password: null,
                 requestStatus: null
+            }
+        },
+        created: function () {
+            if (this.isUserConnected !== false) {
+                // Redirection.
+                setTimeout(() => {  window.location.href = '/home' }, 2000)
             }
         },
         mixins: [globalMixins],

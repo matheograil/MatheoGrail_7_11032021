@@ -2,13 +2,13 @@
     <div class='auth'>
         <h2 class='auth__title'>Connectez-vous pour continuer...</h2>
         <div class='auth__form'>
-            <div class='auth__status' v-if="requestStatus === 'success'">✅ Vous êtes connecté(e) !</div>
+            <div class='auth__status' v-if="requestStatus === 'success'">✅ Vous êtes connecté(e), redirection dans quelques instants...</div>
             <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='auth__inputs'>
                 <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
                 <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
-            <a class='button' v-on:click='login' type='button'>Se connecter</a>
+            <a class='button' v-on:click='login' type='button'>Se connecter {{ isUserConnected }}</a>
         </div>
     </div>
 </template>
@@ -51,6 +51,9 @@
                             // Enregistrement de la session localement.
                             localStorage.setItem('userId', JSON.stringify(data.userId));
                             localStorage.setItem('token', JSON.stringify(data.token));
+
+                            // Redirection.
+                            setTimeout(() => {  window.location.href = '/home' }, 3000);
 
                             return this.requestStatus = 'success'
                         }

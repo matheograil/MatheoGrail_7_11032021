@@ -43,6 +43,8 @@
                 };
                 fetch('http://localhost:3000/api/auth/login', requestOptions).then(response => {
                     if (response.status === 200) {
+                        this.email = null
+                        this.password = null
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

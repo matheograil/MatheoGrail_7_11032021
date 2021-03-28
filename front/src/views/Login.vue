@@ -41,18 +41,23 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, password: password  })
                 };
-                fetch('http://localhost:3000/api/auth/login', requestOptions).then(response => {
-                    if (response.status === 200) {
-                        // Nettoyage du formulaire.
-                        this.email = null
-                        this.password = null
+                fetch('http://localhost:3000/api/auth/login', requestOptions).then(response => response.json())
+                    .then(data => {
+                        if (!data.error) {
+                            // Nettoyage du formulaire.
+                            this.email = null
+                            this.password = null
+                            
+                            // Enregistrement de la session localement.
+                            localStorage.setItem('userId', JSON.stringify(data.userId));
+                            localStorage.setItem('token', JSON.stringify(data.token));
 
-                        return this.requestStatus = 'success'
-                    }
-                    this.requestStatus = 'failure'
-                }).catch(() => {
-                    this.requestStatus = 'failure'
-                })
+                            return this.requestStatus = 'success'
+                        }
+                        this.requestStatus = 'failure'
+                    }).catch(() => {
+                        this.requestStatus = 'failure'
+                    })
             }
         }
     }

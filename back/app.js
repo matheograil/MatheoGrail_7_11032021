@@ -10,9 +10,19 @@ app.listen(3000,() => {
     console.log('Serveur opérationnel.')
 });
 
+// Cross Origin Resource Sharing.
+// À SUPPRIMER DANS UN ENVIRONNEMENT DE PRODUCTION.
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    next();
+});
+
 // Utilisation de 'helmet' pour contrer les attaques connues.
-const helmet = require('helmet');
-app.use(helmet());
+// À ACTIVER DANS UN ENVIRONNEMENT DE PRODUCTION.
+//const helmet = require('helmet');
+//app.use(helmet());
 
 // Protection contre les attaques par force brute (1 requête/seconde).
 const rateLimit = require('express-rate-limit');

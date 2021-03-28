@@ -23,10 +23,8 @@ const globalVariables = require('../global/variables');
 const globalFunctions = require('../global/functions');
 
 // Permet de savoir si une adresse électronique est dans la base de données.
-async function doesUserExist(email) {
-    return User.findOne({ where: { email: email } }).then((user) => {
-        return user;
-    });
+function doesUserExist(email) {
+    return User.findOne({ where: { email: email } });
 };
 
 
@@ -35,13 +33,13 @@ async function doesUserExist(email) {
  */
 // Inscription.
 exports.register = (req, res) => {
-    const RegisterValidator = new Validator(req.body, {
+    const registerValidator = new Validator(req.body, {
         firstName: 'required|string|maxLength:50',
         lastName: 'required|string|maxLength:50',
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    globalFunctions.areVariablesValid(RegisterValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(registerValidator).then(areVariablesValid => {
         if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
@@ -65,17 +63,17 @@ exports.register = (req, res) => {
 
 // Connexion.
 exports.login = (req, res) => {
-    const LoginValidator = new Validator(req.body, {
+    const loginValidator = new Validator(req.body, {
         email: 'required|email|maxLength:50',
         password: 'required|string|lengthBetween:10,100'
     });
-    globalFunctions.areVariablesValid(LoginValidator).then(areVariablesValid => {
+    globalFunctions.areVariablesValid(loginValidator).then(areVariablesValid => {
         if (!areVariablesValid) {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const { email, password } = req.body;
         doesUserExist(email).then(doesUserExist => {
-            if (!doesUserExist) {
+            if (!doesUserExist || doesUserExist.isDisabled) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }
             globalFunctions.arePasswordsValid(password, doesUserExist.password).then(arePasswordsValid => {

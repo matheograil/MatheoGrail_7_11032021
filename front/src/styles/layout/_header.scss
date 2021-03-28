@@ -4,16 +4,21 @@
         align-items: baseline;
         justify-content: center;
         padding: 20px;
+
         .header__title {
             padding: 10px;
         }
+
         @media screen and (max-width: $breakpoint-alpha) {
             flex-wrap: wrap;
         }
+
         .header__nav {
             padding: 10px;
+
             a {
                 font-weight: bold;
+                
                 &.router-link-exact-active {
                     color: $secondary-color;
                 }

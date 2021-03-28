@@ -2,7 +2,8 @@
     <div class='auth'>
         <h2 class='auth__title'>Vous pouvez aussi vous inscrire !</h2>
         <div class='auth__form'>
-            <div class='auth__status' v-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
+            <div class='auth__status' v-if="isUserConnected !== false">✅ Redirection dans quelques instants...</div>
+            <div class='auth__status' v-else-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
             <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='auth__inputs'>
                 <input class='auth__input' v-model='firstName' placeholder='Prénom'>
@@ -17,6 +18,8 @@
 </template>
 
 <script>
+    import globalMixins from '@/mixins/global'
+
     export default {
         data: function () {
             return {
@@ -28,6 +31,7 @@
                 requestStatus: null
             }
         },
+        mixins: [globalMixins],
         methods: {
             register() {
                 // Déclaration des variables.

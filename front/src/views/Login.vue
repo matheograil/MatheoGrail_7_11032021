@@ -32,7 +32,7 @@
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
                     (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
-                    this.requestStatus = 'failure'
+                    return this.requestStatus = 'failure'
                 }
 
                 // Utilisation de l'API.
@@ -43,8 +43,10 @@
                 };
                 fetch('http://localhost:3000/api/auth/login', requestOptions).then(response => {
                     if (response.status === 200) {
+                        // Nettoyage du formulaire.
                         this.email = null
                         this.password = null
+
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

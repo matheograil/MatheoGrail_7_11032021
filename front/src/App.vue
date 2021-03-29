@@ -9,6 +9,7 @@
                 </div>
                 <div v-else>
                     <router-link to='/home'>Accueil</router-link> •
+                    <router-link to='/account'>Mon compte</router-link> •
                     <a style='cursor:pointer' v-on:click='logout'>Déconnexion</a>
                 </div>
             </div>
@@ -18,18 +19,9 @@
 </template>
 
 <script>
-    import globalMixins from '@/mixins/global'
+    import globalMixins from './mixins/Global'
 
     export default {
-        mixins: [globalMixins],
-        methods: {
-            logout() {
-                // Suppresion de la session.
-                localStorage.clear();
-
-                // Redirection.
-                window.location.href = '/'
-            }
-        }
+        mixins: [globalMixins]
     }
 </script>

@@ -37,7 +37,7 @@ exports.getDetails = (req, res) => {
             return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
         }
         const id = req.params.id;
-        User.findOne({ where: { id: id }, attributes: ['firstName', 'lastName', 'description', 'isAdmin', 'isDisabled'] }).then(user => {
+        User.findOne({ where: { id: id }, attributes: ['email', 'firstName', 'lastName', 'description', 'isAdmin', 'isDisabled'] }).then(user => {
             if (!user) {
                 return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
             }

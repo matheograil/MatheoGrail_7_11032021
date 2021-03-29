@@ -1,24 +1,24 @@
 <template>
     <div class='auth'>
         <h2 class='auth__title'>Vous pouvez aussi vous inscrire !</h2>
-        <div class='auth__form'>
-            <div class='auth__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
-            <div class='auth__status' v-else-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
-            <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
-            <div class='auth__inputs'>
-                <input class='auth__input' v-model='firstName' placeholder='Prénom'>
-                <input class='auth__input' v-model='lastName' placeholder='Nom'>
-                <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
-                <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
-                <input class='auth__input' type='password' v-model='passwordConfirmation' placeholder='Mot de passe'>
+        <div class='form'>
+            <div class='form__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
+            <div class='form__status' v-else-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
+            <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
+            <div class='form__inputs'>
+                <input class='form__input' v-model='firstName' placeholder='Prénom'>
+                <input class='form__input' v-model='lastName' placeholder='Nom'>
+                <input class='form__input' v-model='email' placeholder='Adresse électronique'>
+                <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
+                <input class='form__input' type='password' v-model='passwordConfirmation' placeholder='Mot de passe'>
             </div>
-            <a class='button' v-on:click='register' type='button'>S'inscrire</a>
+            <a class='btn btn-success' v-on:click='register' type='button'>S'inscrire</a>
         </div>
     </div>
 </template>
 
 <script>
-    import globalMixins from '@/mixins/global'
+    import globalMixins from '../../mixins/Global'
 
     export default {
         data: function () {
@@ -48,7 +48,7 @@
                 passwordConfirmation = this.passwordConfirmation
 
                 // Vérification des variables.
-                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                 if ((!firstName || typeof firstName !== 'string' || firstName.length > 50) ||
                     (!lastName || typeof lastName !== 'string' || lastName.length > 50) ||
                     (!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
@@ -62,7 +62,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ firstName: firstName, lastName: lastName, email: email, password: password  })
-                };
+                }
                 fetch('http://localhost:3000/api/auth/register', requestOptions).then(response => {
                     if (response.status === 200) {
                         // Nettoyage du formulaire.

@@ -1,0 +1,25 @@
+.form {
+    .form__status {
+        margin: 10px;
+    }
+
+    .form__inputs {
+        .form__input {
+            margin-top: 5px;
+            width: 100%;
+            padding: 15px;
+            outline-style: none;
+            box-sizing: border-box;
+            font-size: 15px;
+            font-family: Helvetica;
+            -webkit-appearance: none;
+            border: 1px solid $primary-color;
+            border-radius: 15px;
+
+            &::placeholder {
+                color: $primary-color;
+                opacity: 1;
+            }
+        }
+    }
+}

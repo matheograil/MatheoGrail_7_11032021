@@ -1,5 +1,5 @@
 #app {
-    .auth {
+    .account {
         margin: 0 auto;
         padding: 10px;
         width: 425px;
@@ -9,8 +9,8 @@
             width: calc(100% - 20px);
         }
 
-        .auth__title {
-            margin-bottom: 10px;
+        .account__title {
+            margin: 10px;
         }
     }
 }

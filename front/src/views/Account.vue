@@ -132,7 +132,7 @@
                 fetch('http://localhost:3000/api/accounts/me', requestOptions).then(response => {
                     if (response.status === 200) {
                         // Déconnexion et redirection.
-                        this.logout()
+                        return this.logout()
                     }
                     this.requestStatus = 'failure'
                 }).catch(() => {

@@ -39,9 +39,9 @@
                 password = this.password
 
                 // Vérification des variables.
-                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
-                    (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length >= 50) ||
+                    (!password || typeof password !== 'string' || password.length > 100 || password.length <= 10)) {
                     return this.requestStatus = 'failure'
                 }
 
@@ -50,7 +50,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, password: password  })
-                };
+                }
                 fetch('http://localhost:3000/api/auth/login', requestOptions).then(response => response.json())
                     .then(data => {
                         if (!data.error) {
@@ -59,8 +59,8 @@
                             this.password = null
                             
                             // Enregistrement de la session localement.
-                            localStorage.setItem('userId', JSON.stringify(data.userId));
-                            localStorage.setItem('token', JSON.stringify(data.token));
+                            localStorage.setItem('userId', data.userId)
+                            localStorage.setItem('authorizationToken', data.token)
 
                             // Redirection.
                             setTimeout(() => {  window.location.href = '/home' }, 3000)

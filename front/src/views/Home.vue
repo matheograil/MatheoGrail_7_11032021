@@ -10,6 +10,7 @@
     export default {
         mixins: [globalMixins],
         created: function () {
+            // On vérifie que l'utilisateur est connecté.
             if (this.isUserConnected === false) {
                 // Redirection.
                 window.location.href = '/'

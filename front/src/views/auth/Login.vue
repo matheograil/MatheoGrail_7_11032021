@@ -40,8 +40,8 @@
 
                 // Vérification des variables.
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length >= 50) ||
-                    (!password || typeof password !== 'string' || password.length > 100 || password.length <= 10)) {
+                if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
+                    (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
                     return this.requestStatus = 'failure'
                 }
 

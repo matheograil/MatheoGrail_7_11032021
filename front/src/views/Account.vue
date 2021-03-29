@@ -4,9 +4,9 @@
         <h3 class='account__title'>Mes informations personnelles</h3>
         <div class='form'>
             <div class='form__inputs'>
-                <input disabled class='form__input' :value='firstName'>
-                <input disabled class='form__input' :value='lastName'>
-                <input disabled class='form__input' :value='email'>
+                <input disabled class='form__input' v-model='firstName'>
+                <input disabled class='form__input' v-model='lastName'>
+                <input disabled class='form__input' v-model='email'>
             </div>
         </div>
         <h3 class='account__title'>Modifier mes informations</h3>
@@ -19,19 +19,16 @@
                 <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
             <a class='btn btn-success' v-on:click='edit' type='button'>Enregistrer</a>
-        </div>
-        <h3 class='account__title'>Désactiver mon compte</h3>
-        <div class='form'>
-            <div class='form__inputs'>
-                <input class='form__input' type='password' placeholder='Mot de passe'>
-            </div>
-            <a class='btn btn-error' type='button'>Désactiver</a>
+            <a class='btn btn-error' v-on:click='disable' type='button'>Désactiver mon compte</a>
         </div>
     </div>
 </template>
 
 <script>
     import globalMixins from '../mixins/Global'
+
+    const authorizationToken = localStorage.getItem('authorizationToken'),
+    userId = localStorage.getItem('userId')
 
     export default {
         data: function () {
@@ -56,15 +53,16 @@
             // Utilisation de l'API afin d'afficher les informations personnelles.
             const requestOptions = {
                 method: 'GET',
-                headers: { 'authorization_token': localStorage.getItem('authorizationToken'), 'user_id': localStorage.getItem('userId') }
+                headers: { 'authorization_token': authorizationToken, 'user_id': userId }
             }
-            fetch(`http://localhost:3000/api/accounts/details/${localStorage.getItem('userId')}`, requestOptions).then(response => response.json())
+            fetch(`http://localhost:3000/api/accounts/details/${userId}`, requestOptions).then(response => response.json())
                 .then(data => {
                     if (!data.error) {
                         // Modification des variables.
                         this.firstName = data.firstName
                         this.lastName = data.lastName
                         this.email = data.email
+                        this.description = data.description
                     }
                     console.log('Erreur lors de la récupération des données.')
                 }).catch(() => {
@@ -79,15 +77,29 @@
                 newPassword = this.newPassword
 
                 // Vérification des variables.
-                if ((!description || typeof description !== 'string' || description.length <= 200) ||
-                    (!password || typeof password !== 'string' || password.length >= 100 || password.length <= 10)) {
+                if ((!description || typeof description !== 'string' || description.length > 200) ||
+                    (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
                     return this.requestStatus = 'failure'
+                } else if (newPassword) {
+                    if (typeof newPassword !== 'string' || newPassword.length > 100 || newPassword.length < 10) {
+                        return this.requestStatus = 'failure'
+                    }
                 }
 
                 // Utilisation de l'API.
-                const requestOptions = {
-                    method: 'DELETE',
-                    headers: { 'authorization_token': localStorage.getItem('authorizationToken'), 'user_id': localStorage.getItem('userId') }
+                let requestOptions
+                if (newPassword) {
+                    requestOptions = {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                        body: JSON.stringify({ description: description, password: password, newPassword: newPassword  })
+                    }
+                } else {
+                    requestOptions = {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                        body: JSON.stringify({ description: description, password: password })
+                    }
                 }
                 fetch('http://localhost:3000/api/accounts/me', requestOptions).then(response => {
                     if (response.status === 200) {
@@ -97,6 +109,31 @@
                         this.newPassword = null
                         
                         return this.requestStatus = 'success'
+                    }
+                    this.requestStatus = 'failure'
+                }).catch(() => {
+                    this.requestStatus = 'failure'
+                })
+            },
+            disable() {
+                // Déclaration des variables.
+                const password = this.password
+
+                // Vérification des variables.
+                if (!password || typeof password !== 'string' || password.length > 100 || password.length < 10) {
+                    return this.requestStatus = 'failure'
+                }
+
+                // Utilisation de l'API.
+                const requestOptions = {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                    body: JSON.stringify({ password: password })
+                }
+                fetch('http://localhost:3000/api/accounts/me', requestOptions).then(response => {
+                    if (response.status === 200) {
+                        // Déconnexion et redirection.
+                        this.logout()
                     }
                     this.requestStatus = 'failure'
                 }).catch(() => {

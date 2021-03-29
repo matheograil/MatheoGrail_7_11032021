@@ -18,18 +18,9 @@
 </template>
 
 <script>
-    import globalMixins from '@/mixins/global'
+    import globalMixins from './mixins/Global'
 
     export default {
-        mixins: [globalMixins],
-        methods: {
-            logout() {
-                // Suppresion de la session.
-                localStorage.clear();
-
-                // Redirection.
-                window.location.href = '/'
-            }
-        }
+        mixins: [globalMixins]
     }
 </script>

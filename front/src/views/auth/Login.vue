@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    import globalMixins from '@/mixins/global'
+    import globalMixins from '../../mixins/Global'
 
     export default {
         data: function () {

@@ -9,7 +9,7 @@
                 <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
                 <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
-            <a class='button' v-on:click='login' type='button'>Se connecter</a>
+            <a class='btn btn-success' v-on:click='login' type='button'>Se connecter</a>
         </div>
     </div>
 </template>

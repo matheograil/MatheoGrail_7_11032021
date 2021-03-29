@@ -104,7 +104,6 @@
                 fetch('http://localhost:3000/api/accounts/me', requestOptions).then(response => {
                     if (response.status === 200) {
                         // Nettoyage du formulaire.
-                        this.description = null
                         this.password = null
                         this.newPassword = null
                         

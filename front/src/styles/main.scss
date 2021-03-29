@@ -1,9 +1,11 @@
-@import "./utils/variables";
+@import './utils/variables';
 
-@import "./base/base";
-@import "./base/typography";
+@import './base/base';
+@import './base/typography';
 
-@import "./layout/header";
-@import "./layout/auth";
+@import './layout/header';
+@import './layout/auth';
+@import './layout/account';
 
-@import "./components/buttons";
+@import './components/buttons';
+@import './components/form';

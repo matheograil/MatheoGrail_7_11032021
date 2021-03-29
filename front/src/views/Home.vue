@@ -1,6 +1,6 @@
 <template>
     <div class='home'>
-        <h2 class='home__title'>Ceci est un accès réservé aux utilisateurs connectés.</h2>
+        <h2 class='home__title'>Page en cours de développement...</h2>
     </div>
 </template>
 

@@ -1,13 +1,13 @@
 <template>
     <div class='auth'>
         <h2 class='auth__title'>Connectez-vous pour continuer...</h2>
-        <div class='auth__form'>
-            <div class='auth__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
-            <div class='auth__status' v-else-if="requestStatus === 'success'">✅ Vous êtes connecté(e), redirection dans quelques instants...</div>
-            <div class='auth__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
-            <div class='auth__inputs'>
-                <input class='auth__input' v-model='email' placeholder='Adresse électronique'>
-                <input class='auth__input' type='password' v-model='password' placeholder='Mot de passe'>
+        <div class='form'>
+            <div class='form__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
+            <div class='form__status' v-else-if="requestStatus === 'success'">✅ Vous êtes connecté(e), redirection dans quelques instants...</div>
+            <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
+            <div class='form__inputs'>
+                <input class='form__input' v-model='email' placeholder='Adresse électronique'>
+                <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
             <a class='btn btn-success' v-on:click='login' type='button'>Se connecter</a>
         </div>

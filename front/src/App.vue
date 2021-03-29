@@ -9,6 +9,7 @@
                 </div>
                 <div v-else>
                     <router-link to='/home'>Accueil</router-link> •
+                    <router-link to='/account'>Mon compte</router-link> •
                     <a style='cursor:pointer' v-on:click='logout'>Déconnexion</a>
                 </div>
             </div>

@@ -7,7 +7,7 @@
             <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='form__inputs'>
                 <textarea class='form__input' v-model='content' placeholder='Message public' rows='10'></textarea>
-                <input type='file'>
+                <input type='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
             </div>
             <a class='btn btn-success' v-on:click='publish' type='button'>Publier</a>
         </div>
@@ -23,7 +23,7 @@
     userId = localStorage.getItem('userId')
 
     export default {
-         data: function () {
+        data: function () {
             return {
                 content: null,
                 requestStatus: null
@@ -45,13 +45,29 @@
                 // Vérification des variables.
                 if (!content || typeof content !== 'string' || content.length > 3000) {
                     return this.requestStatus = 'failure'
+                } else if (this.image) {
+                    if (this.image.size > 5000000 || (this.image.type !== 'image/jpeg' && this.image.type !== 'image/jpg' && this.image.type !== 'image/png')) {
+                        return this.requestStatus = 'failure'
+                    }
                 }
 
                 // Utilisation de l'API.
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
-                    body: JSON.stringify({ content: content })
+                let requestOptions
+                if (this.image) {
+                    const formData = new FormData()
+                    formData.append('image', this.image)
+                    formData.append('content', content)
+                    requestOptions = {
+                        method: 'POST',
+                        headers: { 'authorization_token': authorizationToken, 'user_id': userId },
+                        body: formData
+                    }
+                } else {
+                    requestOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                        body: JSON.stringify({ content: content })
+                    }
                 }
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => {
                     if (response.status === 200) {
@@ -64,6 +80,9 @@
                 }).catch(() => {
                     this.requestStatus = 'failure'
                 })
+            },
+            processImage(event) {
+                this.image = event.target.files[0]
             }
         }
     }

@@ -63,8 +63,9 @@
                         this.lastName = data.lastName
                         this.email = data.email
                         this.description = data.description
+                    } else {
+                        console.log('Erreur lors de la récupération des données.')
                     }
-                    console.log('Erreur lors de la récupération des données.')
                 }).catch(() => {
                     console.log('Erreur lors de la récupération des données.')
                 })

@@ -28,6 +28,10 @@ const routes = [
         path: '/profile/:id',
         name: 'Profile',
         component: () => import('../views/Profile')
+    },
+    {
+      path: '*',
+      redirect: '/'
     }
 ]
 

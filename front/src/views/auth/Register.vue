@@ -2,7 +2,7 @@
     <div class='auth'>
         <h2 class='auth__title'>Vous pouvez aussi vous inscrire !</h2>
         <div class='form'>
-            <div class='form__status' v-if='isUserConnected !== false'>✅ Redirection dans quelques instants...</div>
+            <div class='form__status' v-if='isUserConnected() !== false'>✅ Redirection dans quelques instants...</div>
             <div class='form__status' v-else-if="requestStatus === 'success'">✅ Merci de votre inscription !</div>
             <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='form__inputs'>

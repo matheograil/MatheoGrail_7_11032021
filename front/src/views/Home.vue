@@ -63,9 +63,9 @@
                             }
                             return this.messages = messages
                         }
-                        console.log('Erreur lors de la récupération des données.') 
+                        this.logout()
                     }).catch(() => {
-                        console.log('Erreur lors de la récupération des données.')
+                        this.logout()
                     })
             },
             // Publication d'un message.

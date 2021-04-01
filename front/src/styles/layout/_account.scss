@@ -5,12 +5,12 @@
         width: 425px;
         text-align: center;
 
-        @media screen and (max-width: $breakpoint-bravo) {
-            width: calc(100% - 20px);
-        }
-
         .account__title {
             margin: 10px;
+        }
+
+        @media screen and (max-width: $breakpoint-bravo) {
+            width: calc(100% - 20px);
         }
     }
 }

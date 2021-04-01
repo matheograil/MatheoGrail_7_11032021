@@ -13,9 +13,6 @@
 <script>
     import globalMixins from '../mixins/Global'
 
-    const authorizationToken = localStorage.getItem('authorizationToken'),
-    userId = localStorage.getItem('userId')
-
     export default {
         data: function () {
             return {
@@ -30,40 +27,26 @@
         mixins: [globalMixins],
         created: function () {
             // On vérifie que l'utilisateur est connecté.
-            if (this.isUserConnected === false) {
-                // Redirection.
+            if (this.isUserConnected() === false) {
                 window.location.href = '/'
             }
-
-            // Utilisation de l'API afin d'afficher les informations personnelles.
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'authorization_token': authorizationToken, 'user_id': userId }
-            }
-            fetch(`http://localhost:3000/api/accounts/details/${this.$route.params.id}`, requestOptions).then(response => response.json())
-                .then(data => {
-                    if (!data.error) {
-                        // Modification des variables.
-                        this.firstName = data.firstName
-                        this.lastName = data.lastName
-                        this.email = data.email
-                        this.description = data.description
-                        if (this.isAdmin === 1) {
-                            this.isAdmin = 'Administrateur'
-                        } else {
-                            this.isAdmin = 'Utilisateur'
-                        }
-                        if (this.isDisabled === 1) {
-                            this.isDisabled = 'Désactivé'
-                        } else {
-                            this.isDisabled = 'Activé'
-                        }
-                    } else {
-                        console.log('Erreur lors de la récupération des données.')
-                    }
-                }).catch(() => {
-                    console.log('Erreur lors de la récupération des données.')
-                })
+            // Récupération des informations.
+            this.getUserData(this.$route.params.id).then((user) => {
+                this.firstName = user.firstName
+                this.lastName = user.lastName
+                this.email = user.email
+                this.description = user.description
+                if (user.isAdmin === 1) {
+                    this.isAdmin = 'Administrateur'
+                } else {
+                    this.isAdmin = 'Utilisateur'
+                }
+                if (user.isDisabled === 1) {
+                    this.isDisabled = 'Désactivé'
+                } else {
+                    this.isDisabled = 'Activé'
+                }
+            })
         }
     }
 </script>

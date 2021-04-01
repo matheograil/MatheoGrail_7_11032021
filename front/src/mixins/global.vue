@@ -16,13 +16,13 @@
                 // Redirection.
                 window.location.href = '/'
             },
-            getUserDataFunction(userId) {
+            getUserData(userId) {
                 // Utilisation de l'API afin d'afficher les informations personnelles.
                 const requestOptions = {
                     method: 'GET',
                     headers: { 'authorization_token': localStorage.getItem('authorizationToken'), 'user_id': localStorage.getItem('userId') }
                 }
-                fetch(`http://localhost:3000/api/accounts/details/${userId}`, requestOptions).then(response => response.json())
+                return fetch(`http://localhost:3000/api/accounts/details/${userId}`, requestOptions).then(response => response.json())
                     .then(data => {
                         if (!data.error) {
                             if (data.isAdmin === 1) {
@@ -35,9 +35,10 @@
                             } else {
                                 data.isDisabled = 'Activé'
                             }
-                            return this.getUserData = data
+                            return data
+                        } else {
+                            console.log('Erreur lors de la récupération des données.')
                         }
-                        console.log('Erreur lors de la récupération des données.')
                     }).catch(() => {
                         console.log('Erreur lors de la récupération des données.')
                     })

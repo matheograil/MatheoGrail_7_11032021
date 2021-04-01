@@ -14,7 +14,7 @@
         <h3 class='home__title'>Voici les derniers messages publiés :</h3>
         <div class='messages' v-for='message in messages' v-bind:key='message.content'>
             <div class='messages__content'>
-                <div class='messages__more'>Publié par <strong>{{ message.userId }}</strong> le {{ timeConverter(message.timestamp) }} →</div>
+                <div class='messages__more'>Publié par <strong>Mathéo GRAIL</strong> le {{ timeConverter(message.timestamp) }} →</div>
                 {{ message.content }}
                 <img class='messages__img' v-if='message.imageUrl' v-bind:src='message.imageUrl'/>
                 <a class='btn btn-primary' href=''>Afficher les commentaires</a>
@@ -28,7 +28,6 @@
 
     const authorizationToken = localStorage.getItem('authorizationToken'),
     userId = localStorage.getItem('userId')
-
 
     export default {
         data: function () {
@@ -119,7 +118,7 @@
                 let hour = a.getHours()
                 let min = a.getMinutes()
                 let time = date + ' ' + month + ' ' + year + ' à ' + hour + ':' + min
-                return time;
+                return time
             }
         }
     }

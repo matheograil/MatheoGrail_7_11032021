@@ -1,12 +1,12 @@
 <template>
     <div class='account'>
-        <h2 class='account__title'>Mon compte ({{ getUserData.isAdmin }})</h2>
+        <h2 class='account__title'>Mon compte ({{ userData.isAdmin }})</h2>
         <h3 class='account__title'>Mes informations personnelles</h3>
         <div class='form'>
             <div class='form__inputs'>
-                <input disabled class='form__input' v-model='getUserData.firstName'>
-                <input disabled class='form__input' v-model='getUserData.lastName'>
-                <input disabled class='form__input' v-model='getUserData.email'>
+                <input disabled class='form__input' v-model='userData.firstName'>
+                <input disabled class='form__input' v-model='userData.lastName'>
+                <input disabled class='form__input' v-model='userData.email'>
             </div>
         </div>
         <h3 class='account__title'>Modifier mes informations</h3>
@@ -14,7 +14,7 @@
             <div class='form__status' v-if="requestStatus === 'success'">✅ Informations modifiées !</div>
             <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='form__inputs'>
-                <input class='form__input' v-model='getUserData.description' placeholder='Description publique'>
+                <input class='form__input' v-model='userData.description' placeholder='Description publique'>
                 <input class='form__input' type='password' v-model='newPassword' placeholder='Nouveau mot de passe (champ optionnel)'>
                 <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
@@ -33,7 +33,7 @@
     export default {
         data: function () {
             return {
-                getUserData: {
+                userData: {
                     firstName: null,
                     lastName: null,
                     email: null,
@@ -54,12 +54,11 @@
             }
 
             // Récupération des informations personnelles.
-            this.getUserDataFunction(userId)
         },
         methods: {
             edit() {
                 // Déclaration des variables.
-                const description = this.getUserData.description,
+                const description = this.userData.description,
                 password = this.password,
                 newPassword = this.newPassword
 

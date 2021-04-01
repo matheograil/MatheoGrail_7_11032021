@@ -16,7 +16,7 @@
                 // Redirection.
                 window.location.href = '/'
             },
-            getUserData(userId) {
+            getUserDataFunction(userId) {
                 // Utilisation de l'API afin d'afficher les informations personnelles.
                 const requestOptions = {
                     method: 'GET',
@@ -25,27 +25,19 @@
                 fetch(`http://localhost:3000/api/accounts/details/${userId}`, requestOptions).then(response => response.json())
                     .then(data => {
                         if (!data.error) {
-                            // Modification des variables.
-                            this.firstName = data.firstName
-                            this.lastName = data.lastName
-                            this.email = data.email
-                            this.description = data.description
-                            this.isAdmin = data.isAdmin
-                            this.isDisabled = data.isDisabled
-
-                            if (this.isAdmin === 1) {
-                                this.isAdmin = 'Administrateur'
+                            if (data.isAdmin === 1) {
+                                data.isAdmin = 'Administrateur'
                             } else {
-                                this.isAdmin = 'Utilisateur'
+                                data.isAdmin = 'Utilisateur'
                             }
-                            if (this.isDisabled === 1) {
-                                this.isDisabled = 'Désactivé'
+                            if (data.isDisabled === 1) {
+                                data.isDisabled = 'Désactivé'
                             } else {
-                                this.isDisabled = 'Activé'
+                                data.isDisabled = 'Activé'
                             }
-                        } else {
-                            console.log('Erreur lors de la récupération des données.')
+                            return this.getUserData = data
                         }
+                        console.log('Erreur lors de la récupération des données.')
                     }).catch(() => {
                         console.log('Erreur lors de la récupération des données.')
                     })

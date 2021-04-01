@@ -1,12 +1,12 @@
 <template>
     <div class='account'>
-        <h2 class='account__title'>Mon compte </h2>
+        <h2 class='account__title'>Mon compte ({{ getUserData.isAdmin }})</h2>
         <h3 class='account__title'>Mes informations personnelles</h3>
         <div class='form'>
             <div class='form__inputs'>
-                <input disabled class='form__input' v-model='firstName'>
-                <input disabled class='form__input' v-model='lastName'>
-                <input disabled class='form__input' v-model='email'>
+                <input disabled class='form__input' v-model='getUserData.firstName'>
+                <input disabled class='form__input' v-model='getUserData.lastName'>
+                <input disabled class='form__input' v-model='getUserData.email'>
             </div>
         </div>
         <h3 class='account__title'>Modifier mes informations</h3>
@@ -14,7 +14,7 @@
             <div class='form__status' v-if="requestStatus === 'success'">✅ Informations modifiées !</div>
             <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='form__inputs'>
-                <input class='form__input' v-model='description' placeholder='Description publique'>
+                <input class='form__input' v-model='getUserData.description' placeholder='Description publique'>
                 <input class='form__input' type='password' v-model='newPassword' placeholder='Nouveau mot de passe (champ optionnel)'>
                 <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
@@ -33,10 +33,13 @@
     export default {
         data: function () {
             return {
-                firstName: null,
-                lastName: null,
-                email: null,
-                description: null,
+                getUserData: {
+                    firstName: null,
+                    lastName: null,
+                    email: null,
+                    description: null,
+                    isAdmin: null
+                },
                 password: null,
                 newPassword: null,
                 requestStatus: null
@@ -51,12 +54,12 @@
             }
 
             // Récupération des informations personnelles.
-            this.getUserData(userId)
+            this.getUserDataFunction(userId)
         },
         methods: {
             edit() {
                 // Déclaration des variables.
-                const description = this.description,
+                const description = this.getUserData.description,
                 password = this.password,
                 newPassword = this.newPassword
 

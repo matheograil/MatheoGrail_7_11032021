@@ -1,6 +1,6 @@
 <template>
     <div class='account'>
-        <h2 class='account__title'>Mon compte</h2>
+        <h2 class='account__title'>Mon compte </h2>
         <h3 class='account__title'>Mes informations personnelles</h3>
         <div class='form'>
             <div class='form__inputs'>
@@ -50,25 +50,8 @@
                 window.location.href = '/'
             }
 
-            // Utilisation de l'API afin d'afficher les informations personnelles.
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'authorization_token': authorizationToken, 'user_id': userId }
-            }
-            fetch(`http://localhost:3000/api/accounts/details/${userId}`, requestOptions).then(response => response.json())
-                .then(data => {
-                    if (!data.error) {
-                        // Modification des variables.
-                        this.firstName = data.firstName
-                        this.lastName = data.lastName
-                        this.email = data.email
-                        this.description = data.description
-                    } else {
-                        console.log('Erreur lors de la récupération des données.')
-                    }
-                }).catch(() => {
-                    console.log('Erreur lors de la récupération des données.')
-                })
+            // Récupération des informations personnelles.
+            this.getUserData(userId)
         },
         methods: {
             edit() {

@@ -12,11 +12,11 @@
             <a class='btn btn-success' v-on:click='publish'>Publier</a>
         </div>
         <h3 class='home__title'>Voici les derniers messages publiés :</h3>
-        <div class='messages' v-for='(content, timestamp, imageUrl) in data' v-bind:key='content.id' >
+        <div class='messages' v-for='message in messages' v-bind:key='message.content'>
             <div class='messages__content'>
-                <div class='messages__more'>Publié par <strong>Mathéo GRAIL</strong> le {{ timestamp }} →</div>
-                {{ content }}
-                <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
+                <div class='messages__more'>Publié par <strong>{{ message.userId }}</strong> le {{ timeConverter(message.timestamp) }} →</div>
+                {{ message.content }}
+                <img class='messages__img' v-if='message.imageUrl' v-bind:src='message.imageUrl'/>
                 <a class='btn btn-primary' href=''>Afficher les commentaires</a>
             </div>
         </div>
@@ -29,12 +29,13 @@
     const authorizationToken = localStorage.getItem('authorizationToken'),
     userId = localStorage.getItem('userId')
 
+
     export default {
         data: function () {
             return {
                 content: null,
                 requestStatus: null,
-                data: null
+                messages: null
             }
         },
         mixins: [globalMixins],
@@ -54,7 +55,7 @@
                 .then(data => {
                     if (!data.error) {
                         // Modification des variables.
-                        this.data = data
+                        this.messages = data
                     } else {
                         console.log('Erreur lors de la récupération des données.')
                     }
@@ -108,6 +109,17 @@
             },
             processImage(event) {
                 this.image = event.target.files[0]
+            },
+            timeConverter(UNIX_timestamp) {
+                let a = new Date(UNIX_timestamp * 1000)
+                let months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
+                let year = a.getFullYear()
+                let month = months[a.getMonth()]
+                let date = a.getDate()
+                let hour = a.getHours()
+                let min = a.getMinutes()
+                let time = date + ' ' + month + ' ' + year + ' à ' + hour + ':' + min
+                return time;
             }
         }
     }

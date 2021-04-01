@@ -32,32 +32,27 @@
             }
         },
         created: function () {
-            if (this.isUserConnected !== false) {
-                // Redirection.
+            // Si l'utilisateur est connecté on le redirige.
+            if (this.isUserConnected() !== false) {
                 setTimeout(() => {  window.location.href = '/home' }, 3000)
             }
         },
         mixins: [globalMixins],
         methods: {
+            // Inscription d'un utilisateur.
             register() {
-                // Déclaration des variables.
                 const firstName = this.firstName,
                 lastName = this.lastName,
                 email = this.email,
                 password = this.password,
                 passwordConfirmation = this.passwordConfirmation
-
-                // Vérification des variables.
-                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                 if ((!firstName || typeof firstName !== 'string' || firstName.length > 50) ||
                     (!lastName || typeof lastName !== 'string' || lastName.length > 50) ||
-                    (!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
+                    (!email || !this.emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
                     (!password || typeof password !== 'string' || password.length > 100 || password.length < 10) ||
                     (password !== passwordConfirmation)) {
                     return this.requestStatus = 'failure'
                 }
-
-                // Utilisation de l'API.
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -65,13 +60,11 @@
                 }
                 fetch('http://localhost:3000/api/auth/register', requestOptions).then(response => {
                     if (response.status === 200) {
-                        // Nettoyage du formulaire.
                         this.firstName = null
                         this.lastName = null
                         this.email = null
                         this.password = null
                         this.passwordConfirmation = null
-                        
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

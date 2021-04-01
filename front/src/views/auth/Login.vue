@@ -26,26 +26,21 @@
             }
         },
         created: function () {
-            if (this.isUserConnected !== false) {
-                // Redirection.
+            // Si l'utilisateur est connecté on le redirige.
+            if (this.isUserConnected() !== false) {
                 setTimeout(() => {  window.location.href = '/home' }, 2000)
             }
         },
         mixins: [globalMixins],
         methods: {
+            // Connexion d'un utilisateur.
             login() {
-                // Déclaration des variables.
                 const email = this.email,
                 password = this.password
-
-                // Vérification des variables.
-                const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                if ((!email || !emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
+                if ((!email || !this.emailRegex.test(String(email).toLowerCase()) || email.length > 50) ||
                     (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
                     return this.requestStatus = 'failure'
                 }
-
-                // Utilisation de l'API.
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -54,17 +49,11 @@
                 fetch('http://localhost:3000/api/auth/login', requestOptions).then(response => response.json())
                     .then(data => {
                         if (!data.error) {
-                            // Nettoyage du formulaire.
                             this.email = null
-                            this.password = null
-                            
-                            // Enregistrement de la session localement.
+                            this.password = null  
                             localStorage.setItem('userId', data.userId)
                             localStorage.setItem('authorizationToken', data.token)
-
-                            // Redirection.
                             setTimeout(() => {  window.location.href = '/home' }, 3000)
-
                             return this.requestStatus = 'success'
                         }
                         this.requestStatus = 'failure'

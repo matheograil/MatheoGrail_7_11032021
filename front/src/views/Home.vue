@@ -26,9 +26,6 @@
 <script>
     import globalMixins from '../mixins/Global'
 
-    const authorizationToken = localStorage.getItem('authorizationToken'),
-    userId = localStorage.getItem('userId')
-
     export default {
         data: function () {
             return {
@@ -40,46 +37,40 @@
         mixins: [globalMixins],
         created: function () {
             // On vérifie que l'utilisateur est connecté.
-            if (this.isUserConnected === false) {
-                // Redirection.
+            if (this.isUserConnected() === false) {
                 window.location.href = '/'
             }
-
-            // Utilisation de l'API afin de récupérer tous les messages.
-             this.refresh()
+            // Récupération des messages.
+            this.getMessages()
         },
         methods: {
-            refresh() {
-                // Utilisation de l'API afin de récupérer tous les messages.
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'authorization_token': authorizationToken, 'user_id': userId }
-            }
-            fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
-                .then(data => {
-                    if (!data.error) {
-                        // Modification des variables.
-                        let x
-                        for (x in data) {
-                            data[x].timestamp = this.timeConverter(data[x].timestamp)
-                            this.getUserData(data[x].userId).then((user) => {
-                                data[x].userId = user.firstName + ' ' + user.lastName
-                            })
+            // Retourne tous les messages.
+            getMessages() {
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
+                    .then(messages => {
+                        if (!messages.error) {
+                            // Modification des variables.
+                            let i
+                            for (i in messages) {
+                                messages[i].timestamp = this.timeConverter(messages[i].timestamp)
+                                this.getUserData(messages[i].userId).then((user) => {
+                                    messages[i].userId = user.firstName + ' ' + user.lastName
+                                })
+                            }
+                            return this.messages = messages
                         }
-                        this.messages = data
-                        
-                    } else {
+                        console.log('Erreur lors de la récupération des données.') 
+                    }).catch(() => {
                         console.log('Erreur lors de la récupération des données.')
-                    }
-                }).catch(() => {
-                    console.log('Erreur lors de la récupération des données.')
-                })
+                    })
             },
+            // Publication d'un message.
             publish() {
-                // Déclaration des variables.
                 const content = this.content
-
-                // Vérification des variables.
                 if (!content || typeof content !== 'string' || content.length > 3000) {
                     return this.requestStatus = 'failure'
                 } else if (this.image) {
@@ -87,8 +78,6 @@
                         return this.requestStatus = 'failure'
                     }
                 }
-
-                // Utilisation de l'API.
                 let requestOptions
                 if (this.image) {
                     const formData = new FormData()
@@ -96,20 +85,20 @@
                     formData.append('content', content)
                     requestOptions = {
                         method: 'POST',
-                        headers: { 'authorization_token': authorizationToken, 'user_id': userId },
+                        headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId },
                         body: formData
                     }
                 } else {
                     requestOptions = {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                        headers: { 'Content-Type': 'application/json', 'authorization_token': this.authorizationToken, 'user_id': this.userId },
                         body: JSON.stringify({ content: content })
                     }
                 }
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => {
                     if (response.status === 200) {
-                        // Nettoyage du formulaire.
-                        this.refresh()
+                        this.content = null
+                        this.getMessages()
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

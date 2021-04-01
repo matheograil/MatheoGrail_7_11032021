@@ -1,42 +1,47 @@
 <script>
     export default {
-        created: function () {
-            this.isUserConnected()
+        // Variables globales.
+        data: function () {
+            return {
+                emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                authorizationToken: localStorage.getItem('authorizationToken'),
+                userId: localStorage.getItem('userId')
+            }
         },
         methods: {
+            // Permet de savoir si un utilisateur est connecté.
             isUserConnected() {
-                if (!localStorage.getItem('userId') || !localStorage.getItem('authorizationToken')) {
-                    return this.isUserConnected = false
+                if (!this.userId || !this.authorizationToken) {
+                    return false
                 }
             },
+            // Permet de déconnecter un utilisateur.
             logout() {
-                // Suppresion de la session.
                 localStorage.clear()
-
-                // Redirection.
                 window.location.href = '/'
             },
+            // Permet de rendre un timestamp compréhensible.
             timeConverter(UNIX_timestamp) {
-                let a = new Date(UNIX_timestamp * 1000)
+                let start = new Date(UNIX_timestamp * 1000)
                 let months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
-                let year = a.getFullYear()
-                let month = months[a.getMonth()]
-                let date = a.getDate()
-                let hour = a.getHours()
-                let min = a.getMinutes()
+                let year = start.getFullYear()
+                let month = months[start.getMonth()]
+                let date = start.getDate()
+                let hour = start.getHours()
+                let min = start.getMinutes()
                 let time = date + ' ' + month + ' ' + year + ' à ' + hour + ':' + min
                 return time
             },
+            // Retourne les données d'un utilisateur.
             getUserData(userId) {
-                // Utilisation de l'API afin d'afficher les informations personnelles.
                 const requestOptions = {
                     method: 'GET',
-                    headers: { 'authorization_token': localStorage.getItem('authorizationToken'), 'user_id': localStorage.getItem('userId') }
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
                 }
                 return fetch(`http://localhost:3000/api/accounts/details/${userId}`, requestOptions).then(response => response.json())
-                    .then(data => {
-                        if (!data.error) {
-                            return data
+                    .then(user => {
+                        if (!user.error) {
+                            return user
                         }
                         console.log('Erreur lors de la récupération des données.')
                     }).catch(() => {

@@ -27,9 +27,6 @@
 <script>
     import globalMixins from '../mixins/Global'
 
-    const authorizationToken = localStorage.getItem('authorizationToken'),
-    userId = localStorage.getItem('userId')
-
     export default {
         data: function () {
             return {
@@ -46,13 +43,11 @@
         mixins: [globalMixins],
         created: function () {
             // On vérifie que l'utilisateur est connecté.
-            if (this.isUserConnected === false) {
-                // Redirection.
+            if (this.isUserConnected() === false) {
                 window.location.href = '/'
             }
-
             // Récupération des informations personnelles.
-            this.getUserData(userId).then((user) => {
+            this.getUserData(this.userId).then((user) => {
                 this.firstName = user.firstName
                 this.lastName = user.lastName
                 this.email = user.email
@@ -65,13 +60,11 @@
             })
         },
         methods: {
+            // Modification du compte.
             edit() {
-                // Déclaration des variables.
                 const description = this.description,
                 password = this.password,
                 newPassword = this.newPassword
-
-                // Vérification des variables.
                 if ((!description || typeof description !== 'string' || description.length > 200) ||
                     (!password || typeof password !== 'string' || password.length > 100 || password.length < 10)) {
                     return this.requestStatus = 'failure'
@@ -80,28 +73,24 @@
                         return this.requestStatus = 'failure'
                     }
                 }
-
-                // Utilisation de l'API.
                 let requestOptions
                 if (newPassword) {
                     requestOptions = {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                        headers: { 'Content-Type': 'application/json', 'authorization_token': this.authorizationToken, 'user_id': this.userId },
                         body: JSON.stringify({ description: description, password: password, newPassword: newPassword  })
                     }
                 } else {
                     requestOptions = {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                        headers: { 'Content-Type': 'application/json', 'authorization_token': this.authorizationToken, 'user_id': this.userId },
                         body: JSON.stringify({ description: description, password: password })
                     }
                 }
                 fetch('http://localhost:3000/api/accounts/me', requestOptions).then(response => {
                     if (response.status === 200) {
-                        // Nettoyage du formulaire.
                         this.password = null
                         this.newPassword = null
-                        
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'
@@ -109,24 +98,19 @@
                     this.requestStatus = 'failure'
                 })
             },
+            // Désactivation du compte.
             disable() {
-                // Déclaration des variables.
                 const password = this.password
-
-                // Vérification des variables.
                 if (!password || typeof password !== 'string' || password.length > 100 || password.length < 10) {
                     return this.requestStatus = 'failure'
                 }
-
-                // Utilisation de l'API.
                 const requestOptions = {
                     method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json', 'authorization_token': authorizationToken, 'user_id': userId },
+                    headers: { 'Content-Type': 'application/json', 'authorization_token': this.authorizationToken, 'user_id': this.userId },
                     body: JSON.stringify({ password: password })
                 }
                 fetch('http://localhost:3000/api/accounts/me', requestOptions).then(response => {
                     if (response.status === 200) {
-                        // Déconnexion et redirection.
                         return this.logout()
                     }
                     this.requestStatus = 'failure'

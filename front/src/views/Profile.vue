@@ -27,11 +27,9 @@
         mixins: [globalMixins],
         created: function () {
             // On vérifie que l'utilisateur est connecté.
-            if (this.isUserConnected === false) {
-                // Redirection.
+            if (this.isUserConnected() === false) {
                 window.location.href = '/'
             }
-
             // Récupération des informations.
             this.getUserData(this.$route.params.id).then((user) => {
                 this.firstName = user.firstName

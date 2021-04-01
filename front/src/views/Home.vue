@@ -11,7 +11,7 @@
             </div>
             <a class='btn btn-success' v-on:click='publish'>Publier</a>
         </div>
-        <h3 class='home__title'>Voici les derniers messages publiés :</h3>
+        <h3 class='home__title' v-if='messages && messages.length > 0' >Voici les derniers messages publiés :</h3>
         <div class='messages' v-for='message in messages' v-bind:key='message.content'>
             <div class='messages__content'>
                 <div class='messages__more'>Publié par <strong>{{ message.userId }}</strong> le {{ message.timestamp }} →</div>

@@ -46,6 +46,11 @@
             }
 
             // Utilisation de l'API afin de récupérer tous les messages.
+             this.refresh()
+        },
+        methods: {
+            refresh() {
+                // Utilisation de l'API afin de récupérer tous les messages.
             const requestOptions = {
                 method: 'GET',
                 headers: { 'authorization_token': authorizationToken, 'user_id': userId }
@@ -69,8 +74,7 @@
                 }).catch(() => {
                     console.log('Erreur lors de la récupération des données.')
                 })
-        },
-        methods: {
+            },
             publish() {
                 // Déclaration des variables.
                 const content = this.content
@@ -105,8 +109,7 @@
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => {
                     if (response.status === 200) {
                         // Nettoyage du formulaire.
-                        this.content = null
-                        
+                        this.refresh()
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

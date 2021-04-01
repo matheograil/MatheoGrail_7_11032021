@@ -67,7 +67,7 @@
         methods: {
             edit() {
                 // Déclaration des variables.
-                const description = this.userData.description,
+                const description = this.description,
                 password = this.password,
                 newPassword = this.newPassword
 

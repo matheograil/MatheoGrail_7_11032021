@@ -34,7 +34,7 @@
         created: function () {
             // Si l'utilisateur est connecté on le redirige.
             if (this.isUserConnected() !== false) {
-                setTimeout(() => {  window.location.href = '/home' }, 3000)
+                setTimeout(() => {  this.$router.push('/home') }, 2000)
             }
         },
         mixins: [globalMixins],

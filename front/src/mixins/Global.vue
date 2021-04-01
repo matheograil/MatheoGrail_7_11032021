@@ -43,9 +43,9 @@
                         if (!user.error) {
                             return user
                         }
-                        console.log('Erreur lors de la récupération des données.')
+                        this.logout()
                     }).catch(() => {
-                        console.log('Erreur lors de la récupération des données.')
+                        this.logout()
                     })
             }
         }

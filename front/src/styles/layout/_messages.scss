@@ -1,0 +1,19 @@
+.messages {
+    .messages__content {
+        border: 1px solid;
+        border-radius: 10px;
+        padding: 10px;
+        overflow-wrap: break-word;
+
+        .messages__more {
+            margin-bottom: 10px;
+        }
+
+        .messages__img {
+            margin: 5px;
+            border-radius: 10px;
+            object-fit: cover;
+            width: calc(100% - 10px);
+        }
+    }
+}

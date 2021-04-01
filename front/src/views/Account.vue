@@ -18,8 +18,8 @@
                 <input class='form__input' type='password' v-model='newPassword' placeholder='Nouveau mot de passe (champ optionnel)'>
                 <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
             </div>
-            <a class='btn btn-success' v-on:click='edit' type='button'>Enregistrer</a>
-            <a class='btn btn-error' v-on:click='disable' type='button'>Désactiver mon compte</a>
+            <a class='btn btn-success' v-on:click='edit'>Enregistrer</a>
+            <a class='btn btn-error' v-on:click='disable'>Désactiver mon compte</a>
         </div>
     </div>
 </template>

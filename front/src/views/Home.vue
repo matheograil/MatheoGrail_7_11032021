@@ -7,12 +7,19 @@
             <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='form__inputs'>
                 <textarea class='form__input' v-model='content' placeholder='Message public' rows='10'></textarea>
-                <input type='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
+                <input class='form__inputFile' type='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
             </div>
-            <a class='btn btn-success' v-on:click='publish' type='button'>Publier</a>
+            <a class='btn btn-success' v-on:click='publish'>Publier</a>
         </div>
-        <hr>
-        <h3 class='home__title'>Et voici les derniers messages publiés :</h3>
+        <h3 class='home__title'>Voici les derniers messages publiés :</h3>
+        <div class='messages' v-for='(content, timestamp, imageUrl) in data' v-bind:key='content.id' >
+            <div class='messages__content'>
+                <div class='messages__more'>Publié par <strong>Mathéo GRAIL</strong> le {{ timestamp }} →</div>
+                {{ content }}
+                <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
+                <a class='btn btn-primary' href=''>Afficher les commentaires</a>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -26,7 +33,8 @@
         data: function () {
             return {
                 content: null,
-                requestStatus: null
+                requestStatus: null,
+                data: null
             }
         },
         mixins: [globalMixins],
@@ -36,6 +44,23 @@
                 // Redirection.
                 window.location.href = '/'
             }
+
+            // Utilisation de l'API afin de récupérer tous les messages.
+            const requestOptions = {
+                method: 'GET',
+                headers: { 'authorization_token': authorizationToken, 'user_id': userId }
+            }
+            fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        // Modification des variables.
+                        this.data = data
+                    } else {
+                        console.log('Erreur lors de la récupération des données.')
+                    }
+                }).catch(() => {
+                    console.log('Erreur lors de la récupération des données.')
+                })
         },
         methods: {
             publish() {

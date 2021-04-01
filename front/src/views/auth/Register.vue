@@ -12,7 +12,7 @@
                 <input class='form__input' type='password' v-model='password' placeholder='Mot de passe'>
                 <input class='form__input' type='password' v-model='passwordConfirmation' placeholder='Mot de passe'>
             </div>
-            <a class='btn btn-success' v-on:click='register' type='button'>S'inscrire</a>
+            <a class='btn btn-success' v-on:click='register'>S'inscrire</a>
         </div>
     </div>
 </template>

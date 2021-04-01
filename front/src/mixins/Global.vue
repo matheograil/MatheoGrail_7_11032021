@@ -18,7 +18,7 @@
             // Permet de déconnecter un utilisateur.
             logout() {
                 localStorage.clear()
-                window.location.href = '/'
+                this.$router.push('/')
             },
             // Permet de rendre un timestamp compréhensible.
             timeConverter(UNIX_timestamp) {

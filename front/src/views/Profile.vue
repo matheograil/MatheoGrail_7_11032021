@@ -28,7 +28,7 @@
         created: function () {
             // On vérifie que l'utilisateur est connecté.
             if (this.isUserConnected() === false) {
-                window.location.href = '/'
+                this.$router.push('/')
             }
             // Récupération des informations.
             this.getUserData(this.$route.params.id).then((user) => {

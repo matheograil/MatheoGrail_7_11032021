@@ -38,7 +38,7 @@
         created: function () {
             // On vérifie que l'utilisateur est connecté.
             if (this.isUserConnected() === false) {
-                window.location.href = '/'
+                this.$router.push('/')
             }
             // Récupération des messages.
             this.getMessages()

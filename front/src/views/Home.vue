@@ -7,7 +7,7 @@
             <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
             <div class='form__inputs'>
                 <textarea class='form__input' v-model='content' placeholder='Message public' rows='10'></textarea>
-                <input class='form__inputFile' type='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
+                <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
             </div>
             <a class='btn btn-success' v-on:click='publish'>Publier</a>
         </div>
@@ -17,7 +17,7 @@
                 <div class='messages__more'>Publié par <strong>{{ message.userId }}</strong> le {{ message.timestamp }} →</div>
                 {{ message.content }}
                 <img class='messages__img' v-if='message.imageUrl' v-bind:src='message.imageUrl'/>
-                <a class='btn btn-primary' v-bind:href='message.url'>Afficher les commentaires</a>
+                <a class='btn btn-primary' v-bind:href='message.url'>Afficher la discussion</a>
             </div>
         </div>
     </div>
@@ -98,6 +98,9 @@
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => {
                     if (response.status === 200) {
                         this.content = null
+                        if (this.image) {
+                            document.getElementById('file').value = null
+                        }
                         this.getMessages()
                         return this.requestStatus = 'success'
                     }

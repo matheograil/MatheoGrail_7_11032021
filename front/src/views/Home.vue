@@ -14,7 +14,7 @@
         <h3 class='home__title' v-if='messages && messages.length > 0' >Voici les derniers messages publiés :</h3>
         <div class='messages' v-for='message in messages' v-bind:key='message.id'>
             <div class='messages__content'>
-                <div class='messages__more'>Publié par <strong>{{ message.userId }}</strong> le {{ message.timestamp }} →</div>
+                <div class='messages__more'>Publié par <strong>{{ message.author }}</strong> le {{ message.timestamp }} →</div>
                 {{ message.content }}
                 <img class='messages__img' v-if='message.imageUrl' v-bind:src='message.imageUrl'/>
                 <a class='btn btn-primary' v-bind:href='message.url'>Afficher la discussion</a>
@@ -56,9 +56,10 @@
                             let i
                             for (i in messages) {
                                 messages[i].timestamp = this.timeConverter(messages[i].timestamp)
-                                messages[i].url = `/messages/${messages[i].id}`
+                                messages[i].url = `/message/${messages[i].id}`
+                                messages[i].author = null
                                 this.getUserData(messages[i].userId).then((user) => {
-                                    messages[i].userId = user.firstName + ' ' + user.lastName
+                                    messages[i].author = user.firstName + ' ' + user.lastName
                                 })
                             }
                             return this.messages = messages

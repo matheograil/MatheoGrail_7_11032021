@@ -30,6 +30,11 @@ const routes = [
         component: () => import('../views/Profile')
     },
     {
+        path: '/message/:id',
+        name: 'Message',
+        component: () => import('../views/Message')
+    },
+    {
       path: '*',
       redirect: '/'
     }

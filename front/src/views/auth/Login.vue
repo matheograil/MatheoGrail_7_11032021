@@ -50,7 +50,7 @@
                     .then(data => {
                         if (!data.error) {
                             this.email = null
-                            this.password = null  
+                            this.password = null
                             localStorage.setItem('userId', data.userId)
                             localStorage.setItem('authorizationToken', data.token)
                             setTimeout(() => {  window.location.href = '/home' }, 3000)

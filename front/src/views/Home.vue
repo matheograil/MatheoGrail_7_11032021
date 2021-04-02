@@ -12,12 +12,12 @@
             <a class='btn btn-success' v-on:click='publish'>Publier</a>
         </div>
         <h3 class='home__title' v-if='messages && messages.length > 0' >Voici les derniers messages publiés :</h3>
-        <div class='messages' v-for='message in messages' v-bind:key='message.content'>
+        <div class='messages' v-for='message in messages' v-bind:key='message.id'>
             <div class='messages__content'>
                 <div class='messages__more'>Publié par <strong>{{ message.userId }}</strong> le {{ message.timestamp }} →</div>
                 {{ message.content }}
                 <img class='messages__img' v-if='message.imageUrl' v-bind:src='message.imageUrl'/>
-                <a class='btn btn-primary' href=''>Afficher les commentaires</a>
+                <a class='btn btn-primary' v-bind:href='message.url'>Afficher les commentaires</a>
             </div>
         </div>
     </div>
@@ -53,10 +53,10 @@
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
                     .then(messages => {
                         if (!messages.error) {
-                            // Modification des variables.
                             let i
                             for (i in messages) {
                                 messages[i].timestamp = this.timeConverter(messages[i].timestamp)
+                                messages[i].url = `/messages/${messages[i].id}`
                                 this.getUserData(messages[i].userId).then((user) => {
                                     messages[i].userId = user.firstName + ' ' + user.lastName
                                 })

@@ -51,8 +51,8 @@
                         if (!data.error) {
                             this.email = null
                             this.password = null
-                            localStorage.setItem('userId', data.userId)
-                            localStorage.setItem('authorizationToken', data.token)
+                            localStorage.setItem('groupomania_userId', data.userId)
+                            localStorage.setItem('groupomania_authorizationToken', data.token)
                             setTimeout(() => {  window.location.href = '/home' }, 3000)
                             return this.requestStatus = 'success'
                         }

@@ -4,8 +4,8 @@
         data: function () {
             return {
                 emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                authorizationToken: localStorage.getItem('authorizationToken'),
-                userId: localStorage.getItem('userId')
+                authorizationToken: localStorage.getItem('groupomania_authorizationToken'),
+                userId: localStorage.getItem('groupomania_userId')
             }
         },
         methods: {
@@ -47,6 +47,10 @@
                     }).catch(() => {
                         this.logout()
                     })
+            },
+            // Permet de prendre en compte une image dans un formulaire.
+            processImage(event) {
+                this.image = event.target.files[0]
             }
         }
     }

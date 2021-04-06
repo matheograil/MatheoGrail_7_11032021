@@ -47,7 +47,7 @@
                 this.$router.push('/')
             }
             // Récupération des informations personnelles.
-            this.getUserData(this.userId).then((user) => {
+            this.getUserData(this.userId).then(user => {
                 this.firstName = user.firstName
                 this.lastName = user.lastName
                 this.email = user.email
@@ -57,6 +57,8 @@
                 } else {
                     this.isAdmin = 'Utilisateur'
                 }
+            }).catch(() => {
+                this.logout()
             })
         },
         methods: {

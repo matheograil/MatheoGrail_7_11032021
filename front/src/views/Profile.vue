@@ -31,7 +31,7 @@
                 this.$router.push('/')
             }
             // Récupération des informations.
-            this.getUserData(this.$route.params.id).then((user) => {
+            this.getUserData(this.$route.params.id).then(user => {
                 this.firstName = user.firstName
                 this.lastName = user.lastName
                 this.email = user.email
@@ -46,6 +46,8 @@
                 } else {
                     this.isDisabled = 'Activé'
                 }
+            }).catch(() => {
+                this.logout()
             })
         }
     }

@@ -51,8 +51,7 @@
             // Permet de prendre en compte une image dans un formulaire.
             processImage(event) {
                 this.image = event.target.files[0]
-            },
-            
+            }
         }
     }
 </script>

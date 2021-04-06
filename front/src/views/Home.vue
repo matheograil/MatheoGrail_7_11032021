@@ -109,9 +109,6 @@
                 }).catch(() => {
                     this.requestStatus = 'failure'
                 })
-            },
-            processImage(event) {
-                this.image = event.target.files[0]
             }
         }
     }

@@ -58,7 +58,7 @@
                                 messages[i].timestamp = this.timeConverter(messages[i].timestamp)
                                 messages[i].url = `/message/${messages[i].id}`
                                 messages[i].author = null
-                                this.getUserData(messages[i].userId).then((user) => {
+                                this.getUserData(messages[i].userId).then(user => {
                                     messages[i].author = user.firstName + ' ' + user.lastName
                                 })
                             }

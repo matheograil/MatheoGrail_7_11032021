@@ -7,8 +7,8 @@
                 <div class='messages__more'>Publié par <strong>{{ author }}</strong> le {{ timestamp }} →</div>
                 {{ content }}
                 <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
-                <a class='btn btn-primary' v-if='authorId == this.userId' v-on:click='isInProgress = 1'>Modifier</a>
-                <a class='btn btn-error' v-if='authorId == this.userId || isAdmin' v-on:click='remove'>Supprimer</a>
+                <a class='btn btn-primary' v-if='authorId == userId' v-on:click='isInProgress = 1'>Modifier</a>
+                <a class='btn btn-error' v-if='authorId == userId || isAdmin' v-on:click='removeMessage'>Supprimer</a>
             </div>
         </div>
         <div class='form' v-else>
@@ -18,7 +18,15 @@
                 <textarea class='form__input' v-model='content' placeholder='Message public' rows='10'></textarea>
                 <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
             </div>
-            <a class='btn btn-success' v-on:click='edit'>Publier</a>
+            <a class='btn btn-success' v-on:click='edit'>Modifier</a>
+        </div>
+        <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
+        <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
+            <div class='messages__content'>
+                <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
+                {{ comment.content }}
+                <a class='btn btn-error' v-if='userId == comment.userId' v-on:click='removeComment(comment.id)'>Supprimer</a>
+            </div>
         </div>
     </div>
 </template>
@@ -36,7 +44,8 @@
                 authorId: null,
                 isAdmin: null,
                 isInProgress: null,
-                requestStatus: null
+                requestStatus: null,
+                comments: null
             }
         },
         mixins: [globalMixins],
@@ -46,38 +55,61 @@
                 this.$router.push('/')
             }
             // Récupération du message.
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
-            }
-            fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => response.json())
-                .then(message => {
-                    if (!message.error) {
-                        this.getUserData(message.userId).then(user => {
-                            this.author = user.firstName + ' ' + user.lastName
-                        })
-                        this.authorId = 1
-                        this.timestamp = this.timeConverter(message.timestamp)
-                        this.content = message.content
-                        this.imageUrl = message.imageUrl
-                    } else {
-                        this.logout()
-                    }
-                }).catch(() => {
-                    this.logout()
-                })
-            // On détermine si l'utilisateur est administrateur.
-            this.getUserData(this.userId).then(user => {
-                if (user.isAdmin === 1) {
-                    this.isAdmin = 1
-                }
-            }).catch(() => {
-                this.logout()
-            })
+            this.getMessage()
+            // Récupération des commentaires.
+            this.getComments()
         },
         methods: {
+            // Retourne le message.
+            getMessage() {
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => response.json())
+                    .then(message => {
+                        if (!message.error) {
+                            this.getUserData(message.userId).then(user => {
+                                this.author = user.firstName + ' ' + user.lastName
+                            })
+                            this.authorId = message.userId
+                            this.timestamp = this.timeConverter(message.timestamp)
+                            this.content = message.content
+                            this.imageUrl = message.imageUrl
+                        } else {
+                            this.logout()
+                        }
+                    }).catch(() => {
+                        this.logout()
+                    })
+            },
+            // Retourne tous les commentaires.
+            getComments() {
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
+                    .then(comments => {
+                        if (!comments.error) {
+                            let i
+                            for (i in comments) {
+                                comments[i].timestamp = this.timeConverter(comments[i].timestamp)
+                                comments[i].url = `/message/${comments[i].id}`
+                                comments[i].author = null
+                                this.getUserData(comments[i].userId).then(user => {
+                                    comments[i].author = user.firstName + ' ' + user.lastName
+                                })
+                            }
+                            return this.comments = comments
+                        }
+                        this.logout()
+                    }).catch(() => {
+                        this.logout()
+                    })
+            },
             // Suppression du message et de ses commentaires.
-            remove() {
+            removeMessage() {
                 const requestOptions = {
                     method: 'DELETE',
                     headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
@@ -85,6 +117,21 @@
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => {
                     if (response.status === 200) {
                         return this.$router.push('/home')
+                    }
+                    this.logout()
+                }).catch(() => {
+                    this.logout()
+                })
+            },
+            // Suppression d'un commentaire
+            removeComment(id) {
+                const requestOptions = {
+                    method: 'DELETE',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch(`http://localhost:3000/api/comments/${id}`, requestOptions).then(response => {
+                    if (response.status === 200) {
+                        return this.getComments()
                     }
                     this.logout()
                 }).catch(() => {
@@ -124,6 +171,11 @@
                         if (this.image) {
                             document.getElementById('file').value = null
                         }
+                        setTimeout(() => {
+                            this.isInProgress = null
+                            this.requestStatus = null
+                            this.getMessage()
+                        }, 3000)
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

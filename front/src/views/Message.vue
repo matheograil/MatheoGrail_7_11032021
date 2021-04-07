@@ -25,7 +25,7 @@
             <div class='messages__content'>
                 <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
                 {{ comment.content }}
-                <a class='btn btn-error' v-if='this.authorId === comment.userId'>Supprimer</a>
+                <a class='btn btn-error' v-if='userId == comment.userId' v-on:click='removeComment(comment.id)'>Supprimer</a>
             </div>
         </div>
     </div>
@@ -97,7 +97,7 @@
                                 comments[i].timestamp = this.timeConverter(comments[i].timestamp)
                                 comments[i].url = `/message/${comments[i].id}`
                                 comments[i].author = null
-                                this.getUserData(comments[i].userId).then((user) => {
+                                this.getUserData(comments[i].userId).then(user => {
                                     comments[i].author = user.firstName + ' ' + user.lastName
                                 })
                             }
@@ -117,6 +117,21 @@
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => {
                     if (response.status === 200) {
                         return this.$router.push('/home')
+                    }
+                    this.logout()
+                }).catch(() => {
+                    this.logout()
+                })
+            },
+            // Suppression d'un commentaire
+            removeComment(id) {
+                const requestOptions = {
+                    method: 'DELETE',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch(`http://localhost:3000/api/comments/${id}`, requestOptions).then(response => {
+                    if (response.status === 200) {
+                        return this.getComments()
                     }
                     this.logout()
                 }).catch(() => {

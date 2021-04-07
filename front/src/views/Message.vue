@@ -18,7 +18,7 @@
                 <textarea class='form__input' v-model='content' placeholder='Message public' rows='10'></textarea>
                 <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
             </div>
-            <a class='btn btn-success' v-on:click='edit'>Publier</a>
+            <a class='btn btn-success' v-on:click='edit'>Modifier</a>
         </div>
         <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
         <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
@@ -54,38 +54,34 @@
                 this.$router.push('/')
             }
             // Récupération du message.
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
-            }
-            fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => response.json())
-                .then(message => {
-                    if (!message.error) {
-                        this.getUserData(message.userId).then(user => {
-                            this.author = user.firstName + ' ' + user.lastName
-                        })
-                        this.authorId = 1
-                        this.timestamp = this.timeConverter(message.timestamp)
-                        this.content = message.content
-                        this.imageUrl = message.imageUrl
-                    } else {
-                        this.logout()
-                    }
-                }).catch(() => {
-                    this.logout()
-                })
-            // On détermine si l'utilisateur est administrateur.
-            this.getUserData(this.userId).then(user => {
-                if (user.isAdmin === 1) {
-                    this.isAdmin = 1
-                }
-            }).catch(() => {
-                this.logout()
-            })
+            this.getMessage()
             // Récupération des commentaires.
             this.getComments()
         },
         methods: {
+            // Retourne le message.
+            getMessage() {
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => response.json())
+                    .then(message => {
+                        if (!message.error) {
+                            this.getUserData(message.userId).then(user => {
+                                this.author = user.firstName + ' ' + user.lastName
+                            })
+                            this.authorId = 1
+                            this.timestamp = this.timeConverter(message.timestamp)
+                            this.content = message.content
+                            this.imageUrl = message.imageUrl
+                        } else {
+                            this.logout()
+                        }
+                    }).catch(() => {
+                        this.logout()
+                    })
+            },
             // Retourne tous les commentaires.
             getComments() {
                 const requestOptions = {
@@ -159,6 +155,11 @@
                         if (this.image) {
                             document.getElementById('file').value = null
                         }
+                        setTimeout(() => {
+                            this.isInProgress = null
+                            this.requestStatus = null
+                            this.getMessage()
+                        }, 3000)
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'

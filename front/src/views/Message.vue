@@ -72,7 +72,7 @@
                             this.getUserData(message.userId).then(user => {
                                 this.author = user.firstName + ' ' + user.lastName
                             })
-                            this.authorId = 1
+                            this.authorId = message.userId
                             this.timestamp = this.timeConverter(message.timestamp)
                             this.content = message.content
                             this.imageUrl = message.imageUrl

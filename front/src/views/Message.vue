@@ -20,6 +20,13 @@
             </div>
             <a class='btn btn-success' v-on:click='edit'>Publier</a>
         </div>
+        <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
+        <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
+            <div class='messages__content'>
+                <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
+                {{ comment.content }}
+            </div>
+        </div>
     </div>
 </template>
 
@@ -36,7 +43,8 @@
                 authorId: null,
                 isAdmin: null,
                 isInProgress: null,
-                requestStatus: null
+                requestStatus: null,
+                comments: null
             }
         },
         mixins: [globalMixins],
@@ -74,8 +82,35 @@
             }).catch(() => {
                 this.logout()
             })
+            // Récupération des commentaires.
+            this.getComments()
         },
         methods: {
+            // Retourne tous les commentaires.
+            getComments() {
+                const requestOptions = {
+                    method: 'GET',
+                    headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
+                }
+                fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
+                    .then(comments => {
+                        if (!comments.error) {
+                            let i
+                            for (i in comments) {
+                                comments[i].timestamp = this.timeConverter(comments[i].timestamp)
+                                comments[i].url = `/message/${comments[i].id}`
+                                comments[i].author = null
+                                this.getUserData(comments[i].userId).then((user) => {
+                                    comments[i].author = user.firstName + ' ' + user.lastName
+                                })
+                            }
+                            return this.comments = comments
+                        }
+                        this.logout()
+                    }).catch(() => {
+                        this.logout()
+                    })
+            },
             // Suppression du message et de ses commentaires.
             remove() {
                 const requestOptions = {

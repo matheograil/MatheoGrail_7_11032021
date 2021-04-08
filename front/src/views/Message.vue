@@ -106,24 +106,41 @@
                     method: 'GET',
                     headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
                 }
-                fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
-                    .then(comments => {
-                        if (!comments.error) {
-                            let i
-                            for (i in comments) {
-                                comments[i].timestamp = this.timeConverter(comments[i].timestamp)
-                                comments[i].url = `/message/${comments[i].id}`
-                                comments[i].author = null
-                                this.getUserData(comments[i].userId).then(user => {
-                                    comments[i].author = user.firstName + ' ' + user.lastName
-                                })
-                            }
-                            return this.comments = comments
+                const timeConverter = this.timeConverter,
+                getUserData = this.getUserData
+                async function loop(comments) {
+                    let i
+                    for (i in comments) {
+                        comments[i].timestamp = timeConverter(comments[i].timestamp)
+                        const author = await getUserData(comments[i].userId)
+                        comments[i].author = author.firstName + ' ' + author.lastName
+                    }
+                    return comments
+                }
+                fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
+                    .then(messages => {
+                        if (!messages.error) {
+                            return loop(messages).then(messages => {
+                                return this.messages = messages
+                            })
                         }
                         this.logout()
                     }).catch(() => {
                         this.logout()
                     })
+
+                fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
+                    .then(comments => {
+                        if (!comments.error) {
+                            return loop(comments).then(comments => {
+                                return this.comments = comments
+                            })
+                        }
+                        this.logout()
+                    }).catch(() => {
+                        this.logout()
+                    })
+
             },
             // Suppression du message et de ses commentaires.
             removeMessage() {

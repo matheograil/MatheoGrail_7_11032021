@@ -14,6 +14,8 @@
             </div>
             <h3 class='message__title'>Publiez un nouveau commentaire !</h3>
             <div class='form'>
+                <div class='form__status' v-if="requestStatusPublishComment === 'success'">✅ Commentaire publié !</div>
+                <div class='form__status' v-else-if="requestStatusPublishComment === 'failure'">❌ Informations incorrectes.</div>
                 <div class='form__inputs'>
                     <textarea class='form__input' v-model='contentComment' placeholder='Commentaire' rows='5'></textarea>
                 </div>
@@ -31,8 +33,8 @@
         <div v-else>
             <h3 class='message__title'>Modifiez votre message !</h3>
             <div class='form'>
-                <div class='form__status' v-if="requestStatus === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
-                <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
+                <div class='form__status' v-if="requestStatuseditMessage === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
+                <div class='form__status' v-else-if="requestStatuseditMessage === 'failure'">❌ Informations incorrectes.</div>
                 <div class='form__inputs'>
                     <textarea class='form__input' v-model='messageContent' placeholder='Message public' rows='10'></textarea>
                     <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
@@ -58,7 +60,8 @@
                 authorId: null,
                 isAdmin: null,
                 isInProgress: null,
-                requestStatus: null,
+                requestStatuseditMessage: null,
+                requestStatusPublishComment: null,
                 comments: null
             }
         },
@@ -156,10 +159,10 @@
             editMessage() {
                 const content = this.messageContent
                 if (!content || typeof content !== 'string' || content.length > 3000) {
-                    return this.requestStatus = 'failure'
+                    return this.requestStatuseditMessage = 'failure'
                 } else if (this.image) {
                     if (this.image.size > 5000000 || (this.image.type !== 'image/jpeg' && this.image.type !== 'image/jpg' && this.image.type !== 'image/png')) {
-                        return this.requestStatus = 'failure'
+                        return this.requestStatuseditMessage = 'failure'
                     }
                 }
                 let requestOptions
@@ -187,21 +190,21 @@
                         }
                         setTimeout(() => {
                             this.isInProgress = null
-                            this.requestStatus = null
+                            this.requestStatuseditMessage = null
                             this.getMessage()
                         }, 3000)
-                        return this.requestStatus = 'success'
+                        return this.requestStatuseditMessage = 'success'
                     }
-                    this.requestStatus = 'failure'
+                    this.requestStatuseditMessage = 'failure'
                 }).catch(() => {
-                    this.requestStatus = 'failure'
+                    this.requestStatuseditMessage = 'failure'
                 })
             },
             // Publication d'un commentaire.
             publishComment() {
                 const content = this.contentComment
                 if (!content || typeof content !== 'string' || content.length > 3000) {
-                    return this.requestStatus = 'failure'
+                    return this.requestStatusPublishComment = 'failure'
                 }
                 const requestOptions = {
                     method: 'POST',
@@ -211,11 +214,12 @@
                 fetch('http://localhost:3000/api/comments', requestOptions).then(response => {
                     if (response.status === 200) {
                         this.contentComment = null
-                        return this.getComments()
+                        this.getComments()
+                        return this.requestStatusPublishComment = 'success'
                     }
-                    this.requestStatus = 'failure'
+                    this.requestStatusPublishComment = 'failure'
                 }).catch(() => {
-                    this.requestStatus = 'failure'
+                    this.requestStatusPublishComment = 'failure'
                 })
             }
         }

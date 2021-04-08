@@ -1,31 +1,46 @@
 <template>
     <div class='message'>
         <h2 class='message__title'>Message</h2>
-        <h3 class='message__title'>Voici le message sélectionné :</h3>
-        <div class='messages' v-if='isInProgress === null'>
-            <div class='messages__content'>
-                <div class='messages__more'>Publié par <strong>{{ author }}</strong> le {{ timestamp }} →</div>
-                {{ content }}
-                <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
-                <a class='btn btn-primary' v-if='authorId == userId' v-on:click='isInProgress = 1'>Modifier</a>
-                <a class='btn btn-error' v-if='authorId == userId || isAdmin' v-on:click='removeMessage'>Supprimer</a>
+        <div v-if='isInProgress === null'>
+            <h3 class='message__title'>Voici le message sélectionné :</h3>
+            <div class='messages'>
+                <div class='messages__content'>
+                    <div class='messages__more'>Publié par <strong>{{ author }}</strong> le {{ timestamp }} →</div>
+                    {{ messageContent }}
+                    <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
+                    <a class='btn btn-primary' v-if='authorId == userId' v-on:click='isInProgress = 1'>Modifier</a>
+                    <a class='btn btn-error' v-if='authorId == userId || isAdmin' v-on:click='removeMessage'>Supprimer</a>
+                </div>
+            </div>
+            <h3 class='message__title'>Publiez un nouveau commentaire !</h3>
+            <div class='form'>
+                <div class='form__status' v-if="requestStatusPublishComment === 'success'">✅ Commentaire publié !</div>
+                <div class='form__status' v-else-if="requestStatusPublishComment === 'failure'">❌ Informations incorrectes.</div>
+                <div class='form__inputs'>
+                    <textarea class='form__input' v-model='contentComment' placeholder='Commentaire' rows='5'></textarea>
+                </div>
+                <a class='btn btn-success' v-on:click='publishComment'>Publier</a>
+            </div>
+            <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
+            <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
+                <div class='messages__content'>
+                    <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
+                    {{ comment.content }}
+                    <a class='btn btn-error' v-if='userId == comment.userId' v-on:click='removeComment(comment.id)'>Supprimer</a>
+                </div>
             </div>
         </div>
-        <div class='form' v-else>
-            <div class='form__status' v-if="requestStatus === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
-            <div class='form__status' v-else-if="requestStatus === 'failure'">❌ Informations incorrectes.</div>
-            <div class='form__inputs'>
-                <textarea class='form__input' v-model='content' placeholder='Message public' rows='10'></textarea>
-                <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
-            </div>
-            <a class='btn btn-success' v-on:click='edit'>Modifier</a>
-        </div>
-        <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
-        <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
-            <div class='messages__content'>
-                <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
-                {{ comment.content }}
-                <a class='btn btn-error' v-if='userId == comment.userId' v-on:click='removeComment(comment.id)'>Supprimer</a>
+        <div v-else>
+            <h3 class='message__title'>Modifiez votre message !</h3>
+            <div class='form'>
+                <div class='form__status' v-if="requestStatuseditMessage === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
+                <div class='form__status' v-else-if="requestStatuseditMessage === 'failure'">❌ Informations incorrectes.</div>
+                <div class='form__inputs'>
+                    <textarea class='form__input' v-model='messageContent' placeholder='Message public' rows='10'></textarea>
+                    <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
+                </div>
+                <a class='btn btn-success' v-on:click='editMessage'>Modifier</a>
+                <a class='btn btn-primary' v-on:click='isInProgress = null'>Retour</a>
             </div>
         </div>
     </div>
@@ -39,12 +54,14 @@
             return {
                 author: null,
                 timestamp: null,
-                content: null,
+                messageContent: null,
+                contentComment: null,
                 imageUrl: null,
                 authorId: null,
                 isAdmin: null,
                 isInProgress: null,
-                requestStatus: null,
+                requestStatuseditMessage: null,
+                requestStatusPublishComment: null,
                 comments: null
             }
         },
@@ -69,13 +86,13 @@
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => response.json())
                     .then(message => {
                         if (!message.error) {
+                            this.authorId = message.userId
+                            this.timestamp = this.timeConverter(message.timestamp)
+                            this.messageContent = message.content
+                            this.imageUrl = message.imageUrl
                             this.getUserData(message.userId).then(user => {
                                 this.author = user.firstName + ' ' + user.lastName
                             })
-                            this.authorId = message.userId
-                            this.timestamp = this.timeConverter(message.timestamp)
-                            this.content = message.content
-                            this.imageUrl = message.imageUrl
                         } else {
                             this.logout()
                         }
@@ -139,13 +156,13 @@
                 })
             },
             // Modification d'un message.
-            edit() {
-                const content = this.content
+            editMessage() {
+                const content = this.messageContent
                 if (!content || typeof content !== 'string' || content.length > 3000) {
-                    return this.requestStatus = 'failure'
+                    return this.requestStatuseditMessage = 'failure'
                 } else if (this.image) {
                     if (this.image.size > 5000000 || (this.image.type !== 'image/jpeg' && this.image.type !== 'image/jpg' && this.image.type !== 'image/png')) {
-                        return this.requestStatus = 'failure'
+                        return this.requestStatuseditMessage = 'failure'
                     }
                 }
                 let requestOptions
@@ -167,20 +184,42 @@
                 }
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => {
                     if (response.status === 200) {
-                        this.content = null
+                        this.messageContent = null
                         if (this.image) {
                             document.getElementById('file').value = null
                         }
                         setTimeout(() => {
                             this.isInProgress = null
-                            this.requestStatus = null
+                            this.requestStatuseditMessage = null
                             this.getMessage()
                         }, 3000)
-                        return this.requestStatus = 'success'
+                        return this.requestStatuseditMessage = 'success'
                     }
-                    this.requestStatus = 'failure'
+                    this.requestStatuseditMessage = 'failure'
                 }).catch(() => {
-                    this.requestStatus = 'failure'
+                    this.requestStatuseditMessage = 'failure'
+                })
+            },
+            // Publication d'un commentaire.
+            publishComment() {
+                const content = this.contentComment
+                if (!content || typeof content !== 'string' || content.length > 3000) {
+                    return this.requestStatusPublishComment = 'failure'
+                }
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'authorization_token': this.authorizationToken, 'user_id': this.userId },
+                    body: JSON.stringify({ linkedMessage: this.$route.params.id, content: content })
+                }
+                fetch('http://localhost:3000/api/comments', requestOptions).then(response => {
+                    if (response.status === 200) {
+                        this.contentComment = null
+                        this.getComments()
+                        return this.requestStatusPublishComment = 'success'
+                    }
+                    this.requestStatusPublishComment = 'failure'
+                }).catch(() => {
+                    this.requestStatusPublishComment = 'failure'
                 })
             }
         }

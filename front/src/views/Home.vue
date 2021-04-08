@@ -50,19 +50,24 @@
                     method: 'GET',
                     headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
                 }
+                const timeConverter = this.timeConverter,
+                getUserData = this.getUserData
+                async function loop(messages) {
+                    let i
+                    for (i in messages) {
+                        messages[i].timestamp = timeConverter(messages[i].timestamp)
+                        messages[i].url = `/message/${messages[i].id}`
+                        const author = await getUserData(messages[i].userId)
+                        messages[i].author = author.firstName + ' ' + author.lastName
+                    }
+                    return messages
+                }
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
                     .then(messages => {
                         if (!messages.error) {
-                            let i
-                            for (i in messages) {
-                                messages[i].timestamp = this.timeConverter(messages[i].timestamp)
-                                messages[i].url = `/message/${messages[i].id}`
-                                messages[i].author = null
-                                this.getUserData(messages[i].userId).then(user => {
-                                    messages[i].author = user.firstName + ' ' + user.lastName
-                                })
-                            }
-                            return this.messages = messages
+                            return loop(messages).then(messages => {
+                                return this.messages = messages
+                            })
                         }
                         this.logout()
                     }).catch(() => {

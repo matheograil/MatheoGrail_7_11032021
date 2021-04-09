@@ -106,21 +106,10 @@
                     method: 'GET',
                     headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
                 }
-                const timeConverter = this.timeConverter,
-                getUserData = this.getUserData
-                async function loop(comments) {
-                    let i
-                    for (i in comments) {
-                        comments[i].timestamp = timeConverter(comments[i].timestamp)
-                        const author = await getUserData(comments[i].userId)
-                        comments[i].author = author.firstName + ' ' + author.lastName
-                    }
-                    return comments
-                }
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
                     .then(messages => {
                         if (!messages.error) {
-                            return loop(messages).then(messages => {
+                            return this.loop(messages).then(messages => {
                                 return this.messages = messages
                             })
                         }
@@ -132,7 +121,7 @@
                 fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
                     .then(comments => {
                         if (!comments.error) {
-                            return loop(comments).then(comments => {
+                            return this.loop(comments).then(comments => {
                                 return this.comments = comments
                             })
                         }
@@ -140,7 +129,6 @@
                     }).catch(() => {
                         this.logout()
                     })
-
             },
             // Suppression du message et de ses commentaires.
             removeMessage() {

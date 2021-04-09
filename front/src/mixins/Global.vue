@@ -51,7 +51,19 @@
             // Permet de prendre en compte une image dans un formulaire.
             processImage(event) {
                 this.image = event.target.files[0]
+            },
+            // Permet de faire une boucle afin de retourner les informations pour les messages/commentaires.
+            async loop(content) {
+                let i
+                for (i in content) {
+                    content[i].timestamp = this.timeConverter(content[i].timestamp)
+                    content[i].url = `/message/${content[i].id}`
+                    const author = await this.getUserData(content[i].userId)
+                    content[i].author = author.firstName + ' ' + author.lastName
+                }
+                return content
             }
+    
         }
     }
 </script>

@@ -26,7 +26,7 @@
                 <div class='messages__content'>
                     <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
                     {{ comment.content }}
-                    <a class='btn btn-error' v-if='userId == comment.userId' v-on:click='removeComment(comment.id)'>Supprimer</a>
+                    <a class='btn btn-error' v-if='userId == comment.userId || isAdmin' v-on:click='removeComment(comment.id)'>Supprimer</a>
                 </div>
             </div>
         </div>

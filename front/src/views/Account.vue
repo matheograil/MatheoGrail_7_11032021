@@ -52,7 +52,7 @@
                 this.lastName = user.lastName
                 this.email = user.email
                 this.description = user.description
-                if (user.isAdmin === 1) {
+                if (user.isAdmin) {
                     this.isAdmin = 'Administrateur'
                 } else {
                     this.isAdmin = 'Utilisateur'

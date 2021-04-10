@@ -1,7 +1,7 @@
 <template>
     <div class='message'>
         <h2 class='message__title'>Message</h2>
-        <div v-if='isInProgress === null'>
+        <div v-if='!isInProgress && !selectedComment'>
             <h3 class='message__title'>Voici le message sélectionné :</h3>
             <div class='messages'>
                 <div class='messages__content'>
@@ -26,12 +26,12 @@
                 <div class='messages__content'>
                     <div class='messages__more'>Publié par <strong><a v-bind:href='comment.userProfile'>{{ comment.author }}</a></strong> le {{ comment.timestamp }} →</div>
                     {{ comment.content }}
-                    <a class='btn btn-primary' v-if='userId == comment.userId' v-on:click='selectedComment = comment.id'>Modifier</a>
+                    <a class='btn btn-primary' v-if='userId == comment.userId' v-on:click='selectedComment = comment.id, selectedCommentContent = comment.content'>Modifier</a>
                     <a class='btn btn-error' v-if='userId == comment.userId || isAdmin' v-on:click='removeComment(comment.id)'>Supprimer</a>
                 </div>
             </div>
         </div>
-        <div v-else-if='isInProgress === 1'>
+        <div v-else-if='isInProgress'>
             <h3 class='message__title'>Modifiez votre message !</h3>
             <div class='form'>
                 <div class='form__status' v-if="requestStatuseditMessage === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
@@ -44,16 +44,16 @@
                 <a class='btn btn-primary' v-on:click='isInProgress = null'>Retour</a>
             </div>
         </div>
-        <div v-else-if='selectedComment !== null'>
+        <div v-else-if='selectedComment'>
             <h3 class='message__title'>Modifiez votre commentaire !</h3>
             <div class='form'>
-                <div class='form__status' v-if="requestStatuseditComment === 'success'">✅ Commentaire modifié, redirection dans quelques instants !</div>
-                <div class='form__status' v-else-if="requestStatuseditComment === 'failure'">❌ Informations incorrectes.</div>
+                <div class='form__status' v-if="requestStatusEditComment === 'success'">✅ Commentaire modifié, redirection dans quelques instants !</div>
+                <div class='form__status' v-else-if="requestStatusEditComment === 'failure'">❌ Informations incorrectes.</div>
                 <div class='form__inputs'>
-                    <textarea class='form__input' v-model='comments[selectedComment].content' placeholder='Commentaire' rows='5'></textarea>
+                    <textarea class='form__input' v-model='selectedCommentContent' placeholder='Commentaire' rows='5'></textarea>
                 </div>
                 <a class='btn btn-success' v-on:click='editComment'>Modifier</a>
-                <a class='btn btn-primary' v-on:click='isInProgress = null'>Retour</a>
+                <a class='btn btn-primary' v-on:click='selectedComment = null'>Retour</a>
             </div>
         </div>
     </div>
@@ -76,9 +76,10 @@
                 isInProgress: null,
                 requestStatuseditMessage: null,
                 requestStatusPublishComment: null,
-                requestStatuseditComment: null,
+                requestStatusEditComment: null,
                 comments: null,
-                selectedComment: null
+                selectedComment: null,
+                selectedCommentContent: null
             }
         },
         mixins: [globalMixins],
@@ -126,16 +127,6 @@
                     method: 'GET',
                     headers: { 'authorization_token': this.authorizationToken, 'user_id': this.userId }
                 }
-                fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
-                    .then(messages => {
-                        if (!messages.error) {
-                            return this.loop(messages).then(messages => {
-                                this.messages = messages
-                            })
-                        }
-                        console.log("Une erreur s'est produite.")
-                    })
-
                 fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
                     .then(comments => {
                         if (!comments.error) {
@@ -233,6 +224,31 @@
                         return this.requestStatusPublishComment = 'success'
                     }
                     this.requestStatusPublishComment = 'failure'
+                })
+            },
+            // Modification d'un commentaire.
+            editComment() {
+                const id = this.selectedComment,
+                content = this.selectedCommentContent
+                if (!content || typeof content !== 'string' || content.length > 3000) {
+                    return this.requestStatusPublishComment = 'failure'
+                }
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'authorization_token': this.authorizationToken, 'user_id': this.userId },
+                    body: JSON.stringify({ content: content })
+                }
+                fetch(`http://localhost:3000/api/comments/${id}`, requestOptions).then(response => {
+                    if (response.status === 200) {
+                        this.selectedCommentContent = null
+                        this.getComments()
+                        setTimeout(() => {
+                            this.selectedComment = null
+                            this.requestStatusEditComment = null
+                        }, 3000)
+                        return this.requestStatusEditComment = 'success'
+                    }
+                    this.requestStatusEditComment = 'failure'
                 })
             }
         }

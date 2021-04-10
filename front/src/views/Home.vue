@@ -54,7 +54,7 @@
                     .then(messages => {
                         if (!messages.error) {
                             return this.loop(messages).then(messages => {
-                                return this.messages = messages
+                                this.messages = messages
                             })
                         }
                         console.log("Une erreur s'est produite.")

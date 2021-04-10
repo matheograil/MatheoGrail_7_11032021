@@ -130,7 +130,7 @@
                     .then(messages => {
                         if (!messages.error) {
                             return this.loop(messages).then(messages => {
-                                return this.messages = messages
+                                this.messages = messages
                             })
                         }
                         console.log("Une erreur s'est produite.")
@@ -140,7 +140,7 @@
                     .then(comments => {
                         if (!comments.error) {
                             return this.loop(comments).then(comments => {
-                                return this.comments = comments
+                                this.comments = comments
                             })
                         }
                         console.log("Une erreur s'est produite.")

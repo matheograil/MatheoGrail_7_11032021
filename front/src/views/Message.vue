@@ -192,13 +192,13 @@
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => {
                     if (response.status === 200) {
                         this.messageContent = null
+                        this.getMessage()
                         if (this.image) {
                             document.getElementById('file').value = null
                         }
                         setTimeout(() => {
                             this.isInProgress = null
                             this.requestStatuseditMessage = null
-                            this.getMessage()
                         }, 3000)
                         return this.requestStatuseditMessage = 'success'
                     }

@@ -164,7 +164,7 @@ exports.delMessage = (req, res) => {
                         } else if (filename) {
                             deleteImage(filename);
                         }
-                        Comment.destroy({ where: { linkedMessage: id, userId: userId } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
+                        Comment.destroy({ where: { linkedMessage: id } }).then(() => res.status(200).json({ message: globalVariables.SUCCESS }));
                     });
                 }
             });

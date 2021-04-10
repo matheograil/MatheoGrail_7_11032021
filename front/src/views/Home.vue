@@ -57,9 +57,7 @@
                                 return this.messages = messages
                             })
                         }
-                        this.logout()
-                    }).catch(() => {
-                        this.logout()
+                        console.log("Une erreur s'est produite.")
                     })
             },
             // Publication d'un message.
@@ -98,8 +96,6 @@
                         this.getMessages()
                         return this.requestStatus = 'success'
                     }
-                    this.requestStatus = 'failure'
-                }).catch(() => {
                     this.requestStatus = 'failure'
                 })
             }

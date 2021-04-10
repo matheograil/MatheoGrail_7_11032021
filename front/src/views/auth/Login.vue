@@ -57,8 +57,6 @@
                             return this.requestStatus = 'success'
                         }
                         this.requestStatus = 'failure'
-                    }).catch(() => {
-                        this.requestStatus = 'failure'
                     })
             }
         }

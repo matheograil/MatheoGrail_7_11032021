@@ -46,8 +46,6 @@
                 } else {
                     this.isDisabled = 'Activé'
                 }
-            }).catch(() => {
-                this.logout()
             })
         }
     }

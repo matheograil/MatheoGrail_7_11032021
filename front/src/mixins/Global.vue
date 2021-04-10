@@ -43,9 +43,7 @@
                         if (!user.error) {
                             return user
                         }
-                        this.logout()
-                    }).catch(() => {
-                        this.logout()
+                        console.log("Une erreur s'est produite.")
                     })
             },
             // Permet de prendre en compte une image dans un formulaire.
@@ -59,8 +57,13 @@
                     content[i].userProfile = `/profile/${content[i].userId}`
                     content[i].timestamp = this.timeConverter(content[i].timestamp)
                     content[i].url = `/message/${content[i].id}`
-                    const author = await this.getUserData(content[i].userId)
-                    content[i].author = author.firstName + ' ' + author.lastName
+                    let author
+                    try {
+                        author = await this.getUserData(content[i].userId)
+                        content[i].author = author.firstName + ' ' + author.lastName
+                    } catch {
+                        return console.log("Une erreur s'est produite.")
+                    }
                 }
                 return content
             }

@@ -57,8 +57,6 @@
                 } else {
                     this.isAdmin = 'Utilisateur'
                 }
-            }).catch(() => {
-                this.logout()
             })
         },
         methods: {
@@ -96,8 +94,6 @@
                         return this.requestStatus = 'success'
                     }
                     this.requestStatus = 'failure'
-                }).catch(() => {
-                    this.requestStatus = 'failure'
                 })
             },
             // Désactivation du compte.
@@ -115,8 +111,6 @@
                     if (response.status === 200) {
                         return this.logout()
                     }
-                    this.requestStatus = 'failure'
-                }).catch(() => {
                     this.requestStatus = 'failure'
                 })
             }

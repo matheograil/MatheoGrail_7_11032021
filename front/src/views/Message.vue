@@ -5,7 +5,7 @@
             <h3 class='message__title'>Voici le message sélectionné :</h3>
             <div class='messages'>
                 <div class='messages__content'>
-                    <div class='messages__more'>Publié par <strong>{{ author }}</strong> le {{ timestamp }} →</div>
+                    <div class='messages__more'>Publié par <strong><a v-bind:href='userProfile'>{{ author }}</a></strong> le {{ timestamp }} →</div>
                     {{ messageContent }}
                     <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
                     <a class='btn btn-primary' v-if='authorId == userId' v-on:click='isInProgress = 1'>Modifier</a>
@@ -24,13 +24,14 @@
             <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
             <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
                 <div class='messages__content'>
-                    <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
+                    <div class='messages__more'>Publié par <strong><a v-bind:href='comment.userProfile'>{{ comment.author }}</a></strong> le {{ comment.timestamp }} →</div>
                     {{ comment.content }}
+                    <a class='btn btn-primary' v-if='userId == comment.userId' v-on:click='selectedComment = comment.id'>Modifier</a>
                     <a class='btn btn-error' v-if='userId == comment.userId || isAdmin' v-on:click='removeComment(comment.id)'>Supprimer</a>
                 </div>
             </div>
         </div>
-        <div v-else>
+        <div v-else-if='isInProgress === 1'>
             <h3 class='message__title'>Modifiez votre message !</h3>
             <div class='form'>
                 <div class='form__status' v-if="requestStatuseditMessage === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
@@ -40,6 +41,18 @@
                     <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
                 </div>
                 <a class='btn btn-success' v-on:click='editMessage'>Modifier</a>
+                <a class='btn btn-primary' v-on:click='isInProgress = null'>Retour</a>
+            </div>
+        </div>
+        <div v-else-if='selectedComment !== null'>
+            <h3 class='message__title'>Modifiez votre commentaire !</h3>
+            <div class='form'>
+                <div class='form__status' v-if="requestStatuseditComment === 'success'">✅ Commentaire modifié, redirection dans quelques instants !</div>
+                <div class='form__status' v-else-if="requestStatuseditComment === 'failure'">❌ Informations incorrectes.</div>
+                <div class='form__inputs'>
+                    <textarea class='form__input' v-model='comments[selectedComment].content' placeholder='Commentaire' rows='5'></textarea>
+                </div>
+                <a class='btn btn-success' v-on:click='editComment'>Modifier</a>
                 <a class='btn btn-primary' v-on:click='isInProgress = null'>Retour</a>
             </div>
         </div>
@@ -53,6 +66,7 @@
         data: function () {
             return {
                 author: null,
+                userProfile: null,
                 timestamp: null,
                 messageContent: null,
                 contentComment: null,
@@ -62,7 +76,9 @@
                 isInProgress: null,
                 requestStatuseditMessage: null,
                 requestStatusPublishComment: null,
-                comments: null
+                requestStatuseditComment: null,
+                comments: null,
+                selectedComment: null
             }
         },
         mixins: [globalMixins],
@@ -75,6 +91,12 @@
             this.getMessage()
             // Récupération des commentaires.
             this.getComments()
+            // L'utilisateur est-il administrateur ?
+            this.getUserData(this.userId).then(user => {
+                if (user.isAdmin) {
+                    this.isAdmin = 1
+                }
+            })
         },
         methods: {
             // Retourne le message.
@@ -90,14 +112,12 @@
                             this.timestamp = this.timeConverter(message.timestamp)
                             this.messageContent = message.content
                             this.imageUrl = message.imageUrl
-                            this.getUserData(message.userId).then(user => {
+                            this.userProfile = `/profile/${message.userId}`
+                            return this.getUserData(message.userId).then(user => {
                                 this.author = user.firstName + ' ' + user.lastName
                             })
-                        } else {
-                            this.logout()
                         }
-                    }).catch(() => {
-                        this.logout()
+                        console.log("Une erreur s'est produite.")
                     })
             },
             // Retourne tous les commentaires.
@@ -110,24 +130,20 @@
                     .then(messages => {
                         if (!messages.error) {
                             return this.loop(messages).then(messages => {
-                                return this.messages = messages
+                                this.messages = messages
                             })
                         }
-                        this.logout()
-                    }).catch(() => {
-                        this.logout()
+                        console.log("Une erreur s'est produite.")
                     })
 
                 fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
                     .then(comments => {
                         if (!comments.error) {
                             return this.loop(comments).then(comments => {
-                                return this.comments = comments
+                                this.comments = comments
                             })
                         }
-                        this.logout()
-                    }).catch(() => {
-                        this.logout()
+                        console.log("Une erreur s'est produite.")
                     })
             },
             // Suppression du message et de ses commentaires.
@@ -140,9 +156,7 @@
                     if (response.status === 200) {
                         return this.$router.push('/home')
                     }
-                    this.logout()
-                }).catch(() => {
-                    this.logout()
+                    console.log("Une erreur s'est produite.")
                 })
             },
             // Suppression d'un commentaire
@@ -155,9 +169,7 @@
                     if (response.status === 200) {
                         return this.getComments()
                     }
-                    this.logout()
-                }).catch(() => {
-                    this.logout()
+                    console.log("Une erreur s'est produite.")
                 })
             },
             // Modification d'un message.
@@ -190,18 +202,16 @@
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => {
                     if (response.status === 200) {
                         this.messageContent = null
+                        this.getMessage()
                         if (this.image) {
                             document.getElementById('file').value = null
                         }
                         setTimeout(() => {
                             this.isInProgress = null
                             this.requestStatuseditMessage = null
-                            this.getMessage()
                         }, 3000)
                         return this.requestStatuseditMessage = 'success'
                     }
-                    this.requestStatuseditMessage = 'failure'
-                }).catch(() => {
                     this.requestStatuseditMessage = 'failure'
                 })
             },
@@ -222,8 +232,6 @@
                         this.getComments()
                         return this.requestStatusPublishComment = 'success'
                     }
-                    this.requestStatusPublishComment = 'failure'
-                }).catch(() => {
                     this.requestStatusPublishComment = 'failure'
                 })
             }

@@ -5,7 +5,7 @@
             <h3 class='message__title'>Voici le message sélectionné :</h3>
             <div class='messages'>
                 <div class='messages__content'>
-                    <div class='messages__more'>Publié par <strong>{{ author }}</strong> le {{ timestamp }} →</div>
+                    <div class='messages__more'>Publié par <strong><a v-bind:href='userProfile'>{{ author }}</a></strong> le {{ timestamp }} →</div>
                     {{ messageContent }}
                     <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
                     <a class='btn btn-primary' v-if='authorId == userId' v-on:click='isInProgress = 1'>Modifier</a>
@@ -24,7 +24,7 @@
             <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
             <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
                 <div class='messages__content'>
-                    <div class='messages__more'>Publié par <strong>{{ comment.author }}</strong> le {{ comment.timestamp }} →</div>
+                    <div class='messages__more'>Publié par <strong><a v-bind:href='comment.userProfile'>{{ comment.author }}</a></strong> le {{ comment.timestamp }} →</div>
                     {{ comment.content }}
                     <a class='btn btn-error' v-if='userId == comment.userId || isAdmin' v-on:click='removeComment(comment.id)'>Supprimer</a>
                 </div>
@@ -53,6 +53,7 @@
         data: function () {
             return {
                 author: null,
+                userProfile: null,
                 timestamp: null,
                 messageContent: null,
                 contentComment: null,
@@ -90,6 +91,7 @@
                             this.timestamp = this.timeConverter(message.timestamp)
                             this.messageContent = message.content
                             this.imageUrl = message.imageUrl
+                            this.userProfile = `/profile/${message.userId}`
                             this.getUserData(message.userId).then(user => {
                                 this.author = user.firstName + ' ' + user.lastName
                             })

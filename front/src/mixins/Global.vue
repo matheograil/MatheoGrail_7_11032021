@@ -56,6 +56,7 @@
             async loop(content) {
                 let i
                 for (i in content) {
+                    content[i].userProfile = `/profile/${content[i].userId}`
                     content[i].timestamp = this.timeConverter(content[i].timestamp)
                     content[i].url = `/message/${content[i].id}`
                     const author = await this.getUserData(content[i].userId)

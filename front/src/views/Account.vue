@@ -1,6 +1,6 @@
 <template>
     <div class='account'>
-        <h2 class='account__title'>Mon compte ({{ isAdmin }})</h2>
+        <h2 class='account__title'>Mon compte ({{ accountType }})</h2>
         <h3 class='account__title'>Mes informations personnelles</h3>
         <div class='form'>
             <div class='form__inputs'>
@@ -34,7 +34,7 @@
                 lastName: null,
                 email: null,
                 description: null,
-                isAdmin: null,
+                accountType: null,
                 password: null,
                 newPassword: null,
                 requestStatus: null
@@ -53,9 +53,9 @@
                 this.email = user.email
                 this.description = user.description
                 if (user.isAdmin) {
-                    this.isAdmin = 'Administrateur'
+                    this.accountType = 'Administrateur'
                 } else {
-                    this.isAdmin = 'Utilisateur'
+                    this.accountType = 'Utilisateur'
                 }
             })
         },

@@ -1,15 +1,15 @@
 <template>
     <div class='message'>
         <h2 class='message__title'>Message</h2>
-        <div v-if='!isInProgress && !selectedComment'>
+        <div v-if='!selectedMessage && !selectedComment'>
             <h3 class='message__title'>Voici le message sélectionné :</h3>
             <div class='messages'>
                 <div class='messages__content'>
-                    <div class='messages__more'>Publié par <strong><a v-bind:href='userProfile'>{{ author }}</a></strong> le {{ timestamp }} →</div>
+                    <div class='messages__more'>Publié par <strong><a v-bind:href='messageUserProfile'>{{ messageAuthor }}</a></strong> le {{ messageDate }} →</div>
                     {{ messageContent }}
-                    <img class='messages__img' v-if='imageUrl' v-bind:src='imageUrl'/>
-                    <a class='btn btn-primary' v-if='authorId == userId' v-on:click='isInProgress = 1'>Modifier</a>
-                    <a class='btn btn-error' v-if='authorId == userId || isAdmin' v-on:click='removeMessage'>Supprimer</a>
+                    <img class='messages__img' v-if='messageImageUrl' v-bind:src='messageImageUrl'/>
+                    <a class='btn btn-primary' v-if='messageAuthorId == userId' v-on:click='selectedMessage = true'>Modifier</a>
+                    <a class='btn btn-error' v-if='messageAuthorId == userId || isAdmin' v-on:click='removeMessage'>Supprimer</a>
                 </div>
             </div>
             <h3 class='message__title'>Publiez un nouveau commentaire !</h3>
@@ -17,21 +17,21 @@
                 <div class='form__status' v-if="requestStatusPublishComment === 'success'">✅ Commentaire publié !</div>
                 <div class='form__status' v-else-if="requestStatusPublishComment === 'failure'">❌ Informations incorrectes.</div>
                 <div class='form__inputs'>
-                    <textarea class='form__input' v-model='contentComment' placeholder='Commentaire' rows='5'></textarea>
+                    <textarea class='form__input' v-model='commentContent' placeholder='Commentaire' rows='5'></textarea>
                 </div>
                 <a class='btn btn-success' v-on:click='publishComment'>Publier</a>
             </div>
             <h3 class='message__title' v-if='comments && comments.length > 0' >Voici les derniers commentaires publiés :</h3>
             <div class='messages' v-for='comment in comments' v-bind:key='comment.id'>
                 <div class='messages__content'>
-                    <div class='messages__more'>Publié par <strong><a v-bind:href='comment.userProfile'>{{ comment.author }}</a></strong> le {{ comment.timestamp }} →</div>
+                    <div class='messages__more'>Publié par <strong><a v-bind:href='comment.profileUrl'>{{ comment.author }}</a></strong> le {{ comment.date }} →</div>
                     {{ comment.content }}
                     <a class='btn btn-primary' v-if='userId == comment.userId' v-on:click='selectedComment = comment.id, selectedCommentContent = comment.content'>Modifier</a>
                     <a class='btn btn-error' v-if='userId == comment.userId || isAdmin' v-on:click='removeComment(comment.id)'>Supprimer</a>
                 </div>
             </div>
         </div>
-        <div v-else-if='isInProgress'>
+        <div v-else-if='selectedMessage'>
             <h3 class='message__title'>Modifiez votre message !</h3>
             <div class='form'>
                 <div class='form__status' v-if="requestStatuseditMessage === 'success'">✅ Message modifié, redirection dans quelques instants !</div>
@@ -41,7 +41,7 @@
                     <input type='file' id='file' accept='image/png, image/jpeg, image/jpg' v-on:change='processImage($event)'>
                 </div>
                 <a class='btn btn-success' v-on:click='editMessage'>Modifier</a>
-                <a class='btn btn-primary' v-on:click='isInProgress = null'>Retour</a>
+                <a class='btn btn-primary' v-on:click='selectedMessage = null'>Retour</a>
             </div>
         </div>
         <div v-else-if='selectedComment'>
@@ -65,19 +65,19 @@
     export default {
         data: function () {
             return {
-                author: null,
-                userProfile: null,
-                timestamp: null,
+                messageAuthor: null,
+                messageUserProfile: null,
+                messageDate: null,
                 messageContent: null,
-                contentComment: null,
-                imageUrl: null,
-                authorId: null,
+                messageImageUrl: null,
+                messageAuthorId: null,
                 isAdmin: null,
-                isInProgress: null,
                 requestStatuseditMessage: null,
                 requestStatusPublishComment: null,
                 requestStatusEditComment: null,
+                commentContent: null,
                 comments: null,
+                selectedMessage: null,
                 selectedComment: null,
                 selectedCommentContent: null
             }
@@ -95,7 +95,7 @@
             // L'utilisateur est-il administrateur ?
             this.getUserData(this.userId).then(user => {
                 if (user.isAdmin) {
-                    this.isAdmin = 1
+                    this.isAdmin = true
                 }
             })
         },
@@ -109,13 +109,13 @@
                 fetch(`http://localhost:3000/api/messages/${this.$route.params.id}`, requestOptions).then(response => response.json())
                     .then(message => {
                         if (!message.error) {
-                            this.authorId = message.userId
-                            this.timestamp = this.timeConverter(message.timestamp)
+                            this.messageAuthorId = message.userId
+                            this.messageDate = this.timeConverter(message.timestamp)
                             this.messageContent = message.content
-                            this.imageUrl = message.imageUrl
-                            this.userProfile = `/profile/${message.userId}`
+                            this.messageImageUrl = message.imageUrl
+                            this.messageUserProfile = `/profile/${message.userId}`
                             return this.getUserData(message.userId).then(user => {
-                                this.author = user.firstName + ' ' + user.lastName
+                                this.messageAuthor = user.firstName + ' ' + user.lastName
                             })
                         }
                         console.log("Une erreur s'est produite.")
@@ -130,7 +130,7 @@
                 fetch(`http://localhost:3000/api/comments/${this.$route.params.id}`, requestOptions).then(response => response.json())
                     .then(comments => {
                         if (!comments.error) {
-                            return this.loop(comments).then(comments => {
+                            return this.loopUserData(comments).then(comments => {
                                 this.comments = comments
                             })
                         }
@@ -165,18 +165,19 @@
             },
             // Modification d'un message.
             editMessage() {
-                const content = this.messageContent
+                const content = this.messageContent,
+                image = this.image
                 if (!content || typeof content !== 'string' || content.length > 3000) {
                     return this.requestStatuseditMessage = 'failure'
-                } else if (this.image) {
-                    if (this.image.size > 5000000 || (this.image.type !== 'image/jpeg' && this.image.type !== 'image/jpg' && this.image.type !== 'image/png')) {
+                } else if (image) {
+                    if (image.size > 5000000 || (image.type !== 'image/jpeg' && image.type !== 'image/jpg' && image.type !== 'image/png')) {
                         return this.requestStatuseditMessage = 'failure'
                     }
                 }
                 let requestOptions
-                if (this.image) {
+                if (image) {
                     const formData = new FormData()
-                    formData.append('image', this.image)
+                    formData.append('image', image)
                     formData.append('content', content)
                     requestOptions = {
                         method: 'PUT',
@@ -194,11 +195,11 @@
                     if (response.status === 200) {
                         this.messageContent = null
                         this.getMessage()
-                        if (this.image) {
+                        if (image) {
                             document.getElementById('file').value = null
                         }
                         setTimeout(() => {
-                            this.isInProgress = null
+                            this.selectedMessage = null
                             this.requestStatuseditMessage = null
                         }, 3000)
                         return this.requestStatuseditMessage = 'success'
@@ -208,7 +209,7 @@
             },
             // Publication d'un commentaire.
             publishComment() {
-                const content = this.contentComment
+                const content = this.commentContent
                 if (!content || typeof content !== 'string' || content.length > 3000) {
                     return this.requestStatusPublishComment = 'failure'
                 }
@@ -219,7 +220,7 @@
                 }
                 fetch('http://localhost:3000/api/comments', requestOptions).then(response => {
                     if (response.status === 200) {
-                        this.contentComment = null
+                        this.commentContent = null
                         this.getComments()
                         return this.requestStatusPublishComment = 'success'
                     }

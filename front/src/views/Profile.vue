@@ -5,8 +5,8 @@
         <img src='../../public/profile.png'>
         <p class='profile__title'><strong>Adresse électronique →</strong> {{ email }}</p>
         <p class='profile__title' v-if='description'><strong>Description →</strong> {{ description }}</p>
-        <p class='profile__title'><strong>Type de compte →</strong> {{ isAdmin }}</p>
-        <p class='profile__title'><strong>État du compte →</strong> {{ isDisabled }}</p>
+        <p class='profile__title'><strong>Type de compte →</strong> {{ accountType }}</p>
+        <p class='profile__title'><strong>État du compte →</strong> {{ accountStatus }}</p>
     </div>
 </template>
 
@@ -20,8 +20,8 @@
                 lastName: null,
                 email: null,
                 description: null,
-                isAdmin: null,
-                isDisabled: null
+                accountType: null,
+                accountStatus: null
             }
         },
         mixins: [globalMixins],
@@ -36,15 +36,15 @@
                 this.lastName = user.lastName
                 this.email = user.email
                 this.description = user.description
-                if (user.isAdmin === 1) {
-                    this.isAdmin = 'Administrateur'
+                if (user.isAdmin) {
+                    this.accountType = 'Administrateur'
                 } else {
-                    this.isAdmin = 'Utilisateur'
+                    this.accountType = 'Utilisateur'
                 }
-                if (user.isDisabled === 1) {
-                    this.isDisabled = 'Désactivé'
+                if (user.isDisabled) {
+                    this.accountStatus = 'Désactivé'
                 } else {
-                    this.isDisabled = 'Activé'
+                    this.accountStatus = 'Activé'
                 }
             })
         }

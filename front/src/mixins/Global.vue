@@ -21,8 +21,8 @@
                 window.location.href = '/'
             },
             // Permet de rendre un timestamp compréhensible.
-            timeConverter(UNIX_timestamp) {
-                let start = new Date(UNIX_timestamp * 1000)
+            timeConverter(timestamp) {
+                let start = new Date(timestamp * 1000)
                 let months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
                 let year = start.getFullYear()
                 let month = months[start.getMonth()]
@@ -51,12 +51,12 @@
                 this.image = event.target.files[0]
             },
             // Permet de faire une boucle afin de retourner les informations pour les messages/commentaires.
-            async loop(content) {
+            async loopUserData(content) {
                 let i
                 for (i in content) {
-                    content[i].userProfile = `/profile/${content[i].userId}`
-                    content[i].timestamp = this.timeConverter(content[i].timestamp)
-                    content[i].url = `/message/${content[i].id}`
+                    content[i].profileUrl = `/profile/${content[i].userId}`
+                    content[i].date = this.timeConverter(content[i].timestamp)
+                    content[i].messageUrl = `/message/${content[i].id}`
                     let author
                     try {
                         author = await this.getUserData(content[i].userId)

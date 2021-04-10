@@ -14,10 +14,10 @@
         <h3 class='home__title' v-if='messages && messages.length > 0' >Voici les derniers messages publiés :</h3>
         <div class='messages' v-for='message in messages' v-bind:key='message.id'>
             <div class='messages__content'>
-                <div class='messages__more'>Publié par <strong><a v-bind:href='message.userProfile'>{{ message.author }}</a></strong> le {{ message.timestamp }} →</div>
+                <div class='messages__more'>Publié par <strong><a v-bind:href='message.profileUrl'>{{ message.author }}</a></strong> le {{ message.date }} →</div>
                 {{ message.content }}
                 <img class='messages__img' v-if='message.imageUrl' v-bind:src='message.imageUrl'/>
-                <a class='btn btn-primary' v-bind:href='message.url'>Afficher la discussion</a>
+                <a class='btn btn-primary' v-bind:href='message.messageUrl'>Afficher la discussion</a>
             </div>
         </div>
     </div>
@@ -53,7 +53,7 @@
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => response.json())
                     .then(messages => {
                         if (!messages.error) {
-                            return this.loop(messages).then(messages => {
+                            return this.loopUserData(messages).then(messages => {
                                 this.messages = messages
                             })
                         }
@@ -62,18 +62,19 @@
             },
             // Publication d'un message.
             publish() {
-                const content = this.content
+                const content = this.content,
+                image = this.image
                 if (!content || typeof content !== 'string' || content.length > 3000) {
                     return this.requestStatus = 'failure'
-                } else if (this.image) {
-                    if (this.image.size > 5000000 || (this.image.type !== 'image/jpeg' && this.image.type !== 'image/jpg' && this.image.type !== 'image/png')) {
+                } else if (image) {
+                    if (image.size > 5000000 || (image.type !== 'image/jpeg' && image.type !== 'image/jpg' && image.type !== 'image/png')) {
                         return this.requestStatus = 'failure'
                     }
                 }
                 let requestOptions
-                if (this.image) {
+                if (image) {
                     const formData = new FormData()
-                    formData.append('image', this.image)
+                    formData.append('image', image)
                     formData.append('content', content)
                     requestOptions = {
                         method: 'POST',
@@ -90,7 +91,7 @@
                 fetch('http://localhost:3000/api/messages', requestOptions).then(response => {
                     if (response.status === 200) {
                         this.content = null
-                        if (this.image) {
+                        if (image) {
                             document.getElementById('file').value = null
                         }
                         this.getMessages()

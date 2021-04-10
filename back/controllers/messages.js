@@ -79,19 +79,6 @@ exports.getAllMessages = (req, res) => {
     });
 };
 
-// Affichage de messages liés à un utilisateur.
-exports.getMessages = (req, res) => {
-    globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {
-        if (!areVariablesValid) {
-            return res.status(400).json({ error: globalVariables.ERROR_WRONG_DATA });
-        }
-        const id = req.params.id;
-        Message.findAll({ where: { userId: id }, order: [[ 'id', 'DESC' ]] }).then(messages => {
-            res.status(200).json(messages);
-        });
-    });
-};
-
 // Affichage d'un message.
 exports.getMessage = (req, res) => {
     globalFunctions.areVariablesValid(globalFunctions.idValidator(req)).then(areVariablesValid => {

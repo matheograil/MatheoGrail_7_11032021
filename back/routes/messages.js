@@ -21,8 +21,6 @@ const messagesCtrl = require('../controllers/messages');
 router.post('/', auth, multer, messagesCtrl.newMessage);            /* POST : api/publication/messages */
 // Affichage des messages.
 router.get('/', auth, messagesCtrl.getAllMessages);         /* GET : api/publication/messages */
-// Affichage de messages liés à un utilisateur.
-router.get('/user/:id', auth, messagesCtrl.getMessages);         /* GET : api/publication/messages/user/:id */
 // Affichage d'un message.
 router.get('/:id', auth, messagesCtrl.getMessage);          /* GET : api/publication/messages/:id */
 // Modification d'un message.

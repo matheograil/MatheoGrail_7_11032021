@@ -1,4 +1,6 @@
 # OpenClassrooms - Septième projet
+**⚠️ Ce projet est archivé et n'est plus maintenu à jour.**
+
 Créez un réseau social d’entreprise.
 
 [![CodeQL](https://github.com/matheograil/MatheoGrail_7_11032021/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/matheograil/MatheoGrail_7_11032021/actions/workflows/codeql-analysis.yml)

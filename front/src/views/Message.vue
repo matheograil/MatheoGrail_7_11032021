@@ -86,7 +86,7 @@
         created: function () {
             // On vérifie que l'utilisateur est connecté.
             if (this.isUserConnected() === false) {
-                this.$router.push('/')
+                return this.$router.push('/')
             }
             // Récupération du message.
             this.getMessage()

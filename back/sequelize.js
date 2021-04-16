@@ -33,7 +33,7 @@ const Comment = CommentModel(sequelize, Sequelize);
 sequelize.sync({ force: true }).then(() => {
     console.log('Connexion à la base de données réussie.');
 }).catch(() => {
-    console.log("Connexion à la base de données échouée.");
+    console.log('Connexion à la base de données échouée.');
 });
 
 // Exportation des modèles.

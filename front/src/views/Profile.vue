@@ -28,7 +28,7 @@
         created: function () {
             // On vérifie que l'utilisateur est connecté.
             if (this.isUserConnected() === false) {
-                this.$router.push('/')
+                return this.$router.push('/')
             }
             // Récupération des informations.
             this.getUserData(this.$route.params.id).then(user => {
